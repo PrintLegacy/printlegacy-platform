@@ -351,9 +351,9 @@ body{font-family:'Jost',sans-serif;display:flex;justify-content:center;align-ite
     </div>
     <!-- Name/Role overlay bottom left — like screenshot -->
     <div style="position:relative;z-index:4;padding:20px 22px 72px">
-      <div style="font-size:.55rem;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.45);background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:100px;display:inline-block;padding:.22rem .75rem;margin-bottom:12px">Profil Professionnel</div>
-      <div id="idName" style="font-family:'Cormorant Garamond',serif;font-size:2.5rem;font-weight:400;color:#fff;line-height:1.1;margin-bottom:5px;letter-spacing:.01em">—</div>
-      <div id="idRole" style="font-size:1rem;font-weight:600;color:var(--ac);letter-spacing:.05em;display:none"></div>
+      <div style="font-size:.55rem;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.45);background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:100px;display:inline-block;padding:.22rem .75rem;margin-bottom:12px">Identité Digitale</div>
+      <div id="idName" style="font-family:'Playfair Display',serif;font-size:2.4rem;font-weight:700;color:#fff;line-height:1.1;margin-bottom:6px;letter-spacing:-.01em">—</div>
+      <div id="idRole" style="font-size:.85rem;font-weight:500;color:var(--ac);letter-spacing:.18em;text-transform:uppercase;display:none;font-family:'Jost',sans-serif"></div>
     </div>
     <!-- Avatar bottom left -->
     <div style="position:absolute;bottom:-44px;left:22px;z-index:5">
@@ -374,46 +374,46 @@ body{font-family:'Jost',sans-serif;display:flex;justify-content:center;align-ite
   <div class="bio" id="bio" style="display:none"></div>
  
   <!-- SAVE -->
-  <button class="save-btn" onclick="saveContact()">💾 Enregistrer le contact</button>
+  <button class="save-btn" onclick="saveContact()">+ Ajouter aux contacts</button>
  
   <!-- SHARE -->
   <div class="share-row">
-    <button class="share-btn" onclick="copyLink()">📋 Copier le lien</button>
-    <button class="share-btn" onclick="shareProfile()">📤 Partager</button>
+    <button class="share-btn" onclick="copyLink()">⎘ Copier le lien le lien</button>
+    <button class="share-btn" onclick="shareProfile()">↗ Partager</button>
   </div>
  
   <!-- CONTACT -->
   <div id="secContact" style="display:none">
-    <div class="divider"><div class="div-line"></div><div class="div-label">Contact</div><div class="div-line"></div></div>
+    <div class="divider"><div class="div-line"></div><div class="div-label">Coordonnées</div><div class="div-line"></div></div>
     <div id="contactLinks"></div>
   </div>
  
   <!-- SOCIAL -->
   <div id="secSocial" style="display:none">
-    <div class="divider"><div class="div-line"></div><div class="div-label">Réseaux</div><div class="div-line"></div></div>
+    <div class="divider"><div class="div-line"></div><div class="div-label">Présence digitale</div><div class="div-line"></div></div>
     <div class="social-wrap" id="socialLinks"></div>
   </div>
  
   <!-- GALLERY -->
   <div id="secGallery" style="display:none">
-    <div class="divider"><div class="div-line"></div><div class="div-label">Galerie</div><div class="div-line"></div></div>
+    <div class="divider"><div class="div-line"></div><div class="div-label">Portfolio</div><div class="div-line"></div></div>
     <div class="gal" id="galGrid"></div>
   </div>
  
   <!-- CV -->
   <div id="secCv" style="display:none">
-    <div class="divider"><div class="div-line"></div><div class="div-label">Document</div><div class="div-line"></div></div>
+    <div class="divider"><div class="div-line"></div><div class="div-label">Ressources</div><div class="div-line"></div></div>
     <a class="cv" id="cvLink" href="#" target="_blank">
       <div class="cv-ico">📄</div>
-      <div><span class="cv-title">Télécharger le CV</span><span class="cv-sub">Document PDF disponible</span></div>
+      <div><span class="cv-title">Consulter le CV</span><span class="cv-sub">Disponible en téléchargement</span></div>
       <span class="cv-arr">↓</span>
     </a>
   </div>
  
   <!-- QR -->
-  <div class="divider" style="margin-top:22px"><div class="div-line"></div><div class="div-label">QR Code</div><div class="div-line"></div></div>
+  <div class="divider" style="margin-top:22px"><div class="div-line"></div><div class="div-label">Partager le profil</div><div class="div-line"></div></div>
   <div class="qr-wrap">
-    <div class="qr-lbl">Scannez pour partager ce profil</div>
+    <div class="qr-lbl">Scannez pour accéder à ce profil</div>
     <div class="qr-box">
       <svg width="96" height="96" viewBox="0 0 64 64">
         <rect fill="white" width="64" height="64"/>
@@ -440,7 +440,7 @@ body{font-family:'Jost',sans-serif;display:flex;justify-content:center;align-ite
   <div class="foot">
     <a href="https://printlegacy.github.io">
       <div class="foot-logo">PL</div>
-      <span style="margin-left:2px">Propulsé par</span>
+      <span style="margin-left:2px">Une création</span>
       <span class="foot-brand">Print <em>Legacy</em></span>
     </a>
   </div>
@@ -450,9 +450,9 @@ body{font-family:'Jost',sans-serif;display:flex;justify-content:center;align-ite
 <!-- NOT FOUND -->
 <div class="frame nf" id="notFound" style="display:none">
   <div class="nf-ico">🔍</div>
-  <div class="nf-title">Profil introuvable</div>
-  <div class="nf-txt">Ce profil n'existe pas ou a été désactivé.<br>Contactez Print Legacy.</div>
-  <a href="https://printlegacy.github.io" class="nf-btn">Retour au site</a>
+  <div class="nf-title">Page introuvable</div>
+  <div class="nf-txt">Ce lien ne correspond à aucun profil actif.<br>Vérifiez l'URL ou contactez Print Legacy.</div>
+  <a href="https://printlegacy.github.io" class="nf-btn">← Retour</a>
 </div>
  
 <!-- FAB APERÇU CARTE -->
@@ -462,7 +462,7 @@ body{font-family:'Jost',sans-serif;display:flex;justify-content:center;align-ite
 <div class="modal-ov" id="modalOv" onclick="if(event.target===this)closeModal()">
   <div class="modal-box">
     <div class="modal-hd">
-      <div class="modal-title">Aperçu carte NFC</div>
+      <div class="modal-title">Aperçu · Carte NFC</div>
       <button class="modal-close" onclick="closeModal()">✕</button>
     </div>
     <div class="bcard">
@@ -484,7 +484,7 @@ body{font-family:'Jost',sans-serif;display:flex;justify-content:center;align-ite
       </div>
       <div class="bc-line"></div>
     </div>
-    <div class="bc-hint">Aperçu de votre carte NFC physique · Print Legacy</div>
+    <div class="bc-hint">Rendu de votre carte NFC physique</div>
   </div>
 </div>
  
@@ -580,8 +580,10 @@ function render(c){
   document.title=`${full} — Print Legacy`;
  
   if(c.jobtitle){
-    const r=document.getElementById('idRole');r.textContent=c.jobtitle;r.style.display='block';
-    document.getElementById('bcRole').textContent=c.jobtitle;
+    // Remove trailing "de/De/DE/d'" that appears before the name
+    const cleanRole = c.jobtitle.replace(/\s+(de|De|DE|d'|D')\s*$/i,'').trim();
+    const r=document.getElementById('idRole');r.textContent=cleanRole;r.style.display='block';
+    document.getElementById('bcRole').textContent=cleanRole;
   }
  
   // Meta chips
