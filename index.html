@@ -67,12 +67,13 @@ body{display:flex;justify-content:center;padding-bottom:90px}
 .cat-desc{font-size:.68rem;color:var(--muted);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;flex:1}
 .cat-price{font-family:"Playfair Display",serif;font-size:.95rem;font-weight:700;color:var(--gold);margin-top:.25rem}
  
-/* ── LIGHTBOX ── */
+/* ── LIGHTBOX (bottom sheet) ── */
 .lb-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:500;align-items:flex-end;justify-content:center;padding:0}
 .lb-ov.open{display:flex}
 .lb-sheet{background:var(--white);border-radius:22px 22px 0 0;width:100%;max-width:420px;overflow:hidden;box-shadow:0 -8px 40px rgba(0,0,0,.3);animation:slideUp .25s ease}
 @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
-.lb-img{width:100%;height:220px;object-fit:cover;display:block;background:var(--cream2)}
+/* FIX : image complète sans recadrage */
+.lb-img{width:100%;max-height:300px;object-fit:contain;display:block;background:var(--cream2)}
 .lb-img-placeholder{width:100%;height:160px;background:var(--cream2);display:flex;align-items:center;justify-content:center;font-size:3.5rem}
 .lb-body{padding:1.2rem 1.3rem 2rem}
 .lb-name{font-family:"Playfair Display",serif;font-size:1.2rem;font-weight:700;color:var(--ink);margin-bottom:.4rem}
@@ -171,7 +172,6 @@ function buildSocials(c){
   return s;
 }
  
-// ── CATALOGUE ──
 function buildCatalogue(c){
   let items=[];
   try{
@@ -190,7 +190,6 @@ function buildCatalogue(c){
       :`<div class="cat-img-placeholder">🛒</div>`;
     const priceHTML=price?`<div class="cat-price">${Number(price).toLocaleString('fr-FR')} FCFA</div>`:'';
     const descHTML=desc?`<div class="cat-desc">${desc}</div>`:'';
-    // Encode item data safely for onclick
     const encoded=encodeURIComponent(JSON.stringify(item));
     return `<div class="cat-card" onclick="openLb(decodeURIComponent('${encoded}'))">
       <div class="cat-img-wrap">${imgHTML}</div>
@@ -212,12 +211,9 @@ function buildCatalogue(c){
   <div class="divider"><span></span></div>`;
 }
  
-// ── LIGHTBOX ──
 function openLb(encodedOrObj){
   let item;
-  try{
-    item = typeof encodedOrObj==='string' ? JSON.parse(encodedOrObj) : encodedOrObj;
-  }catch(e){return;}
+  try{ item=typeof encodedOrObj==='string'?JSON.parse(encodedOrObj):encodedOrObj; }catch(e){return;}
   const img=item.image_url;
   const imgHTML=img
     ?`<img class="lb-img" src="${img}" alt="${item.title||''}" onerror="this.parentElement.innerHTML='<div class=lb-img-placeholder>🛒</div>'">`
@@ -235,7 +231,6 @@ function closeLb(){
   document.body.style.overflow='';
 }
  
-// ── VCARD ──
 function saveVCard(c){
   const lines=['BEGIN:VCARD','VERSION:3.0',
     'FN:'+(c.firstname||'')+' '+(c.lastname||''),
@@ -266,20 +261,15 @@ function showToast(msg){
 function render(c){
   const name=(c.firstname||'')+' '+(c.lastname||'');
   document.title=name+' — Print Legacy';
- 
   const contacts=buildContacts(c);
   const socials=buildSocials(c);
   const catalogueHTML=buildCatalogue(c);
- 
   const av=c.photo?`<img src="${c.photo}" alt="${name}">`:`${ini(c.firstname,c.lastname)}`;
-  // Support cover_url ET cover_photo (les deux noms de champ utilisés)
   const heroImg=c.cover_url||c.cover_photo||c.photo;
   const heroHTML=heroImg
     ?`<img class="hero-img" src="${heroImg}" alt="${name}">`
     :`<div class="hero-placeholder"><div class="hero-initials-big">${ini(c.firstname,c.lastname)}</div></div>`;
-  const roleHTML=c.jobtitle
-    ?`<em>${c.jobtitle}</em>${c.company?' · '+c.company:''}`
-    :(c.company||'');
+  const roleHTML=c.jobtitle?`<em>${c.jobtitle}</em>${c.company?' · '+c.company:''}`:(c.company||'');
   const compHTML=c.company
     ?`<div class="company-card"><div class="co-left"><div class="co-logo"><img src="https://printlegacy.github.io/assets/logo.png" alt="PL" onerror="this.style.display='none'"></div><div><div class="co-name">${c.company}</div><span class="co-badge">Entreprise principale</span></div></div><div class="co-arr">›</div></div>`
     :'';
@@ -295,34 +285,23 @@ function render(c){
  
   document.getElementById('app').innerHTML=`
     <div class="card">
-      <div class="hero">
-        ${heroHTML}
-        <div class="hero-overlay"></div>
+      <div class="hero">${heroHTML}<div class="hero-overlay"></div>
         <div class="hero-content">
           <div class="hero-badge">Carte professionnelle</div>
           <div class="hero-name">${name}</div>
           <div class="hero-role">${roleHTML}</div>
         </div>
       </div>
-      ${compHTML}
-      <div class="spacer"></div>
-      ${aboutHTML}
-      ${contactHTML}
-      ${catalogueHTML}
-      ${socialHTML}
+      ${compHTML}<div class="spacer"></div>
+      ${aboutHTML}${contactHTML}${catalogueHTML}${socialHTML}
       <div style="text-align:center;padding:1rem 1.2rem 1.5rem">
-        <a href="https://printlegacy.github.io" style="font-size:.68rem;color:var(--muted);text-decoration:none">
-          Propulsé par <strong style="color:var(--ink)">Print Legacy</strong>
-        </a>
+        <a href="https://printlegacy.github.io" style="font-size:.68rem;color:var(--muted);text-decoration:none">Propulsé par <strong style="color:var(--ink)">Print Legacy</strong></a>
       </div>
     </div>
     <div class="save-bar">
       <div class="sb-left">
         <div class="sb-av">${av}</div>
-        <div class="sb-txt">
-          <span class="sb-sublbl">Ajouter à mes contacts</span>
-          <span class="sb-title">Enregistrer le contact</span>
-        </div>
+        <div class="sb-txt"><span class="sb-sublbl">Ajouter à mes contacts</span><span class="sb-title">Enregistrer le contact</span></div>
       </div>
       <button class="sb-btn" onclick='saveVCard(${JSON.stringify(c).replace(/'/g,"&#39;")})'>→</button>
     </div>`;
