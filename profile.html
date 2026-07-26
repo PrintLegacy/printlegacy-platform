@@ -139,6 +139,26 @@ function getSlug(){
   const parts=location.pathname.split('/').filter(Boolean);
   return p.get('carte')||p.get('slug')||(parts.length>=2&&parts[0]==='profile'?parts[1]:null);
 }
+
+// ── SOURCE DE LA VISITE (nfc = carte physique, admin = aperçu dashboard, link = tout le reste) ──
+function getSource(){
+  const p=new URLSearchParams(location.search);
+  const src=(p.get('src')||'').toLowerCase();
+  if(src==='nfc'||src==='admin') return src;
+  return 'link';
+}
+
+// ── ENREGISTREMENT DE LA VUE (scan / clic) ──
+// N'échoue jamais bruyamment : si la table card_views n'existe pas encore
+// ou si le réseau est indisponible, on ignore silencieusement (n'affecte pas l'affichage de la carte).
+async function trackView(clientId){
+  try{
+    const source=getSource();
+    await sb.from('card_views').insert({client_id:clientId,source});
+  }catch(e){
+    // silencieux — le suivi des stats ne doit jamais bloquer l'affichage de la carte
+  }
+}
  
 function ini(fn,ln){return((fn||'')[0]+(ln||'')[0]).toUpperCase()||'?'}
  
@@ -319,6 +339,7 @@ async function init(){
     return;
   }
   render(data);
+  trackView(data.id); // on enregistre la vue une fois la carte affichée avec succès
 }
  
 init();
