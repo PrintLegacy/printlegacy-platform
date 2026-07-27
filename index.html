@@ -23,13 +23,27 @@ body{display:flex;justify-content:center;padding-bottom:90px}
 .hero-name{font-family:"Playfair Display",serif;font-size:2rem;font-weight:700;color:var(--white);line-height:1.15;margin-bottom:.15rem}
 .hero-role{font-size:.82rem;color:rgba(255,255,255,.55);font-weight:400}
 .hero-role em{color:var(--gold);font-style:normal;font-weight:600}
-.company-card{margin:1rem 1.2rem;background:var(--cream);border-radius:14px;padding:.9rem 1rem;display:flex;align-items:center;justify-content:space-between;border:1px solid var(--cream2)}
+.company-card-wrap{margin:1rem 1.2rem}
+.company-card{background:var(--cream);border-radius:14px;padding:.9rem 1rem;display:flex;align-items:center;justify-content:space-between;border:1px solid var(--cream2);transition:border-color .15s}
+.company-card[onclick]:hover{border-color:var(--gold-40)}
 .co-left{display:flex;align-items:center;gap:.75rem}
-.co-logo{width:44px;height:44px;border-radius:10px;background:var(--white);border:1px solid var(--cream2);display:flex;align-items:center;justify-content:center;overflow:hidden}
+.co-logo{width:44px;height:44px;border-radius:10px;background:var(--white);border:1px solid var(--cream2);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;color:var(--muted)}
 .co-logo img{width:30px;height:30px;object-fit:contain}
+.co-logo svg{width:22px;height:22px}
+.co-logo-fallback{width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:var(--muted)}
+.co-logo-fallback svg{width:22px;height:22px}
 .co-name{font-size:.9rem;font-weight:600;color:var(--ink);margin-bottom:3px}
 .co-badge{display:inline-block;background:var(--gold-bg);border:1px solid var(--gold-20);border-radius:3px;padding:.15rem .55rem;font-size:.57rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold)}
-.co-arr{width:26px;height:26px;border-radius:50%;background:var(--white);border:1px solid var(--cream2);display:flex;align-items:center;justify-content:center;font-size:.72rem;color:var(--muted)}
+.co-arr{width:26px;height:26px;border-radius:50%;background:var(--white);border:1px solid var(--cream2);display:flex;align-items:center;justify-content:center;color:var(--muted);flex-shrink:0;transition:transform .2s}
+.co-arr svg{width:12px;height:12px}
+.co-arr.open{transform:rotate(90deg)}
+.co-details{max-height:0;overflow:hidden;transition:max-height .3s ease;background:var(--white);border:1px solid var(--cream2);border-top:none;border-radius:0 0 14px 14px;margin-top:-1px}
+.co-details>*{border-top:1px solid var(--cream2)}
+.co-details>*:first-child{border-top:none}
+.co-detail-row{display:flex;align-items:center;gap:.6rem;padding:.65rem 1rem;text-decoration:none;color:var(--ink);font-size:.78rem}
+.co-detail-about{padding:.8rem 1rem;font-size:.78rem;color:var(--muted);line-height:1.7}
+.co-detail-ico{width:18px;height:18px;color:var(--gold);flex-shrink:0;display:flex}
+.co-detail-ico svg{width:100%;height:100%}
 .sec{padding:0 1.2rem 1.1rem}
 .sec-header{display:flex;align-items:center;gap:.7rem;margin-bottom:1rem;padding-bottom:.65rem;border-bottom:1px solid var(--cream2)}
 .sec-ico{width:32px;height:32px;border-radius:8px;background:var(--gold-bg);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--gold)}
@@ -262,7 +276,10 @@ const UI_ICONS={
   fileText:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2.8h8.2L19 7.6v13.6a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V3.8a1 1 0 0 1 1-1z"/><path d="M13.8 2.8V7.6H19"/><path d="M8.2 12.6h7.2"/><path d="M8.2 16h7.2"/></svg>',
   close:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12"/><path d="M18 6L6 18"/></svg>',
   sparkle:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.9 6.6L20.5 10l-6.6 1.9L12 18.5l-1.9-6.6L3.5 10l6.6-1.4L12 2z"/></svg>',
-  frown:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9.3"/><path d="M8.2 15.8a4.6 4.6 0 0 1 7.6 0"/><circle cx="9" cy="10" r=".9" fill="currentColor" stroke="none"/><circle cx="15" cy="10" r=".9" fill="currentColor" stroke="none"/></svg>'
+  frown:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9.3"/><path d="M8.2 15.8a4.6 4.6 0 0 1 7.6 0"/><circle cx="9" cy="10" r=".9" fill="currentColor" stroke="none"/><circle cx="15" cy="10" r=".9" fill="currentColor" stroke="none"/></svg>',
+  building:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="1.4"/><path d="M9 8h.01"/><path d="M14 8h.01"/><path d="M9 12h.01"/><path d="M14 12h.01"/><path d="M9 16h.01"/><path d="M14 16h.01"/><path d="M10 21v-4h4v4"/></svg>',
+  chevron:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>',
+  clock:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.3"/><path d="M12 7v5.3l3.3 2"/></svg>'
 };
 
 function buildContacts(c){
@@ -353,6 +370,22 @@ function closeLb(){
   document.getElementById('lbOv').classList.remove('open');
   document.body.style.overflow='';
 }
+
+// Déplie / replie le panneau d'infos entreprise (à propos, horaires, localisation) au clic sur la flèche
+function toggleCompanyDetails(){
+  const details=document.getElementById('coDetails');
+  const arr=document.getElementById('coArr');
+  if(!details) return;
+  const isOpen=details.classList.contains('open');
+  if(isOpen){
+    details.style.maxHeight='0px';
+    details.classList.remove('open');
+  }else{
+    details.style.maxHeight=details.scrollHeight+'px';
+    details.classList.add('open');
+  }
+  if(arr) arr.classList.toggle('open',!isOpen);
+}
  
 function saveVCard(c){
   const lines=['BEGIN:VCARD','VERSION:3.0',
@@ -394,8 +427,24 @@ function render(c){
     ?`<img class="hero-img" src="${heroImg}" alt="${name}">`
     :`<div class="hero-placeholder"><div class="hero-initials-big">${ini(c.firstname,c.lastname)}</div></div>`;
   const roleHTML=c.jobtitle?`<em>${c.jobtitle}</em>${c.company?' · '+c.company:''}`:(c.company||'');
+  const coLogoHTML=c.company_logo_url
+    ?`<img src="${c.company_logo_url}" alt="${c.company}" onerror="imgFallback(this,'building','co-logo-fallback')">`
+    :UI_ICONS.building;
+  const hasCoDetails=!!(c.company_about||c.company_hours||c.location);
+  const coDetailsHTML=hasCoDetails
+    ?`<div class="co-details" id="coDetails">${c.company_about?`<div class="co-detail-about">${c.company_about}</div>`:''}${c.company_hours?`<div class="co-detail-row"><span class="co-detail-ico">${UI_ICONS.clock}</span><span>${c.company_hours}</span></div>`:''}${c.location?`<a href="${c.location.startsWith('http')?c.location:'https://maps.google.com/?q='+encodeURIComponent(c.location)}" target="_blank" class="co-detail-row"><span class="co-detail-ico">${UI_ICONS.mapPin}</span><span>${c.location.startsWith('http')?'Voir sur la carte':c.location}</span></a>`:''}</div>`
+    :'';
   const compHTML=c.company
-    ?`<div class="company-card"><div class="co-left"><div class="co-logo"><img src="https://printlegacy.github.io/assets/logo.png" alt="PL" onerror="this.style.display='none'"></div><div><div class="co-name">${c.company}</div><span class="co-badge">Entreprise principale</span></div></div><div class="co-arr">›</div></div>`
+    ?`<div class="company-card-wrap">
+        <div class="company-card" ${hasCoDetails?'onclick="toggleCompanyDetails()"':''} style="${hasCoDetails?'cursor:pointer':''}">
+          <div class="co-left">
+            <div class="co-logo">${coLogoHTML}</div>
+            <div><div class="co-name">${c.company}</div><span class="co-badge">Entreprise principale</span></div>
+          </div>
+          ${hasCoDetails?`<div class="co-arr" id="coArr">${UI_ICONS.chevron}</div>`:''}
+        </div>
+        ${coDetailsHTML}
+      </div>`
     :'';
   const aboutHTML=c.bio
     ?`<div class="sec"><div class="sec-header"><div class="sec-ico">${UI_ICONS.user}</div><span class="sec-lbl">À propos</span></div><p class="about-txt">${c.bio}</p></div><div class="divider"><span></span></div>`
