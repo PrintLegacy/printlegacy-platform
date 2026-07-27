@@ -32,7 +32,8 @@ body{display:flex;justify-content:center;padding-bottom:90px}
 .co-arr{width:26px;height:26px;border-radius:50%;background:var(--white);border:1px solid var(--cream2);display:flex;align-items:center;justify-content:center;font-size:.72rem;color:var(--muted)}
 .sec{padding:0 1.2rem 1.1rem}
 .sec-header{display:flex;align-items:center;gap:.7rem;margin-bottom:1rem;padding-bottom:.65rem;border-bottom:1px solid var(--cream2)}
-.sec-ico{width:32px;height:32px;border-radius:8px;background:var(--gold-bg);display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0}
+.sec-ico{width:32px;height:32px;border-radius:8px;background:var(--gold-bg);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--gold)}
+.sec-ico svg{width:16px;height:16px}
 .sec-lbl{font-size:.65rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
 .divider{display:flex;align-items:center;justify-content:center;padding:.3rem 1.2rem 1.1rem}
 .divider::before,.divider::after{content:"";flex:1;height:1px;background:var(--cream2)}
@@ -41,7 +42,8 @@ body{display:flex;justify-content:center;padding-bottom:90px}
 .contact-list{display:flex;flex-direction:column;gap:.45rem}
 .clink{display:flex;align-items:center;gap:.8rem;padding:.8rem .9rem;border-radius:12px;background:var(--cream);text-decoration:none;border:1px solid transparent;transition:all .18s}
 .clink:hover{border-color:var(--gold);background:var(--white)}
-.clink-ico{width:36px;height:36px;border-radius:9px;background:var(--gold-bg);display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0}
+.clink-ico{width:36px;height:36px;border-radius:9px;background:var(--gold-bg);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--gold)}
+.clink-ico svg{width:18px;height:18px}
 .clink-body{flex:1;min-width:0}
 .clink-lbl{font-size:.58rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);display:block}
 .clink-val{font-size:.84rem;font-weight:500;color:var(--ink);display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -62,7 +64,8 @@ body{display:flex;justify-content:center;padding-bottom:90px}
 .cat-img-wrap{width:100%;height:130px;background:var(--cream2);overflow:hidden;flex-shrink:0}
 .cat-img-wrap img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s}
 .cat-card:hover .cat-img-wrap img{transform:scale(1.05)}
-.cat-img-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:2.2rem;color:rgba(0,0,0,.1)}
+.cat-img-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:var(--muted);opacity:.4}
+.cat-img-placeholder svg{width:34px;height:34px}
 .cat-body{padding:.65rem .8rem .8rem;flex:1;display:flex;flex-direction:column;gap:.2rem}
 .cat-name{font-size:.8rem;font-weight:700;color:var(--ink);line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .cat-desc{font-size:.68rem;color:var(--muted);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;flex:1}
@@ -75,12 +78,14 @@ body{display:flex;justify-content:center;padding-bottom:90px}
 @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
 /* FIX : image complète sans recadrage */
 .lb-img{width:100%;max-height:300px;object-fit:contain;display:block;background:var(--cream2)}
-.lb-img-placeholder{width:100%;height:160px;background:var(--cream2);display:flex;align-items:center;justify-content:center;font-size:3.5rem}
+.lb-img-placeholder{width:100%;height:160px;background:var(--cream2);display:flex;align-items:center;justify-content:center;color:var(--muted);opacity:.45}
+.lb-img-placeholder svg{width:48px;height:48px}
 .lb-body{padding:1.2rem 1.3rem 2rem}
 .lb-name{font-family:"Playfair Display",serif;font-size:1.2rem;font-weight:700;color:var(--ink);margin-bottom:.4rem}
 .lb-desc{font-size:.82rem;color:var(--muted);line-height:1.75;margin-bottom:.8rem}
 .lb-price{font-family:"Playfair Display",serif;font-size:1.4rem;font-weight:700;color:var(--gold)}
-.lb-close{position:absolute;top:.9rem;right:1rem;width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,.35);border:none;color:#fff;font-size:.9rem;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10;backdrop-filter:blur(4px)}
+.lb-close{position:absolute;top:.9rem;right:1rem;width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,.35);border:none;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10;backdrop-filter:blur(4px)}
+.lb-close svg{width:15px;height:15px}
 .lb-handle{width:36px;height:4px;background:var(--cream2);border-radius:2px;margin:10px auto 0;cursor:pointer}
  
 .save-bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:420px;background:var(--ink);padding:.8rem 1.2rem;display:flex;align-items:center;justify-content:space-between;z-index:100;box-shadow:0 -4px 24px rgba(0,0,0,.2)}
@@ -97,6 +102,7 @@ body{display:flex;justify-content:center;padding-bottom:90px}
 @keyframes sp{to{transform:rotate(360deg)}}
 .err{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;gap:.8rem;text-align:center;padding:2rem;background:var(--white)}
 .err h2{font-family:"Playfair Display",serif;font-size:1.4rem;color:var(--ink)}
+.err svg{width:100%;height:100%}
 .err p{color:var(--muted);font-size:.875rem;line-height:1.7}
 .err a{color:var(--gold);font-weight:600;text-decoration:none}
 .toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(120px);background:var(--ink);color:var(--white);padding:.65rem 1.4rem;border-radius:100px;font-size:.78rem;font-weight:600;transition:transform .3s cubic-bezier(.34,1.56,.64,1);z-index:999;white-space:nowrap;box-shadow:0 8px 24px rgba(0,0,0,.2)}
@@ -113,7 +119,7 @@ body{display:flex;justify-content:center;padding-bottom:90px}
 <!-- LIGHTBOX produit (bottom sheet) -->
 <div class="lb-ov" id="lbOv" onclick="if(event.target===this)closeLb()">
   <div style="position:relative;width:100%;max-width:420px">
-    <button class="lb-close" onclick="closeLb()">✕</button>
+    <button class="lb-close" onclick="closeLb()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12"/><path d="M18 6L6 18"/></svg></button>
     <div class="lb-sheet">
       <div class="lb-handle" onclick="closeLb()"></div>
       <div id="lbImgWrap"></div>
@@ -162,6 +168,11 @@ async function trackView(clientId){
 }
  
 function ini(fn,ln){return((fn||'')[0]+(ln||'')[0]).toUpperCase()||'?'}
+
+// Remplace une image cassée par le pictogramme approprié (appelé depuis onerror="...")
+function imgFallback(el,iconKey,placeholderClass){
+  el.parentElement.innerHTML=`<div class="${placeholderClass}">${UI_ICONS[iconKey]}</div>`;
+}
 
 // ── VRAIS LOGOS DES RÉSEAUX SOCIAUX (glyphes blancs sur badge à la couleur officielle de la marque) ──
 const SOCIAL_ICONS={
@@ -237,18 +248,35 @@ function applyTheme(themeId){
   root.setProperty('--ink2',lighten(t.ink,0.25));
 }
  
+// ── AUTRES ICÔNES DE L'INTERFACE (contact, sections, divers) ──
+const UI_ICONS={
+  user:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>',
+  idcard:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5" width="19" height="14" rx="2.3"/><circle cx="8" cy="12" r="2"/><path d="M6 16.2c.3-1.3 1.1-2 2-2s1.7.7 2 2"/><path d="M13.5 9.7h5"/><path d="M13.5 13.2h5"/></svg>',
+  bag:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 8h11l1 12.3a1.5 1.5 0 0 1-1.5 1.7H7a1.5 1.5 0 0 1-1.5-1.7L6.5 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>',
+  share:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="2.6"/><circle cx="6" cy="12" r="2.6"/><circle cx="18" cy="19" r="2.6"/><path d="M8.3 10.7l7.4-4.2"/><path d="M8.3 13.3l7.4 4.2"/></svg>',
+  phone:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 4h3.4l1.4 4.2-2 1.6a12.5 12.5 0 0 0 5.9 5.9l1.6-2 4.2 1.4v3.4a1.6 1.6 0 0 1-1.7 1.6A16 16 0 0 1 3 6.7 1.6 1.6 0 0 1 4.5 4z"/></svg>',
+  whatsapp:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.5 2 2 6.4 2 11.8c0 1.9.5 3.6 1.5 5.2L2 22l5.2-1.4a10 10 0 0 0 4.8 1.2c5.5 0 10-4.4 10-9.8S17.5 2 12 2zm0 17.8a8 8 0 0 1-4.1-1.1l-.3-.2-3 .8.8-2.9-.2-.3a7.8 7.8 0 0 1-1.2-4.3C4 7.6 7.6 4 12 4s8 3.6 8 7.8-3.6 8-8 8zm4.4-5.9c-.2-.1-1.4-.7-1.6-.8-.2-.1-.4-.1-.5.1s-.6.8-.7.9c-.1.1-.3.2-.5.1a6.5 6.5 0 0 1-1.9-1.2 7 7 0 0 1-1.3-1.6c-.1-.2 0-.4.1-.5l.4-.4c.1-.1.2-.3.2-.4.1-.1 0-.3 0-.4l-.7-1.7c-.2-.4-.4-.4-.5-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 1.9s.8 2.2.9 2.4c.1.1 1.6 2.5 4 3.5.6.2 1 .4 1.3.5.6.2 1.1.1 1.5-.1.5-.2 1.4-.6 1.6-1.1.2-.5.2-1 .1-1.1-.1-.1-.3-.2-.5-.3z"/></svg>',
+  mail:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="4.5" width="19" height="15" rx="2.3"/><path d="M3 6.2l9 6.3 9-6.3"/></svg>',
+  globe:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9.2"/><path d="M2.8 12h18.4"/><path d="M12 2.8a14 14 0 0 1 4.2 9.2A14 14 0 0 1 12 21.2 14 14 0 0 1 7.8 12 14 14 0 0 1 12 2.8z"/></svg>',
+  mapPin:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 10.5c0 6-7 11.5-7 11.5s-7-5.5-7-11.5a7 7 0 1 1 14 0z"/><circle cx="12" cy="10.5" r="2.6"/></svg>',
+  fileText:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2.8h8.2L19 7.6v13.6a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V3.8a1 1 0 0 1 1-1z"/><path d="M13.8 2.8V7.6H19"/><path d="M8.2 12.6h7.2"/><path d="M8.2 16h7.2"/></svg>',
+  close:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12"/><path d="M18 6L6 18"/></svg>',
+  sparkle:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.9 6.6L20.5 10l-6.6 1.9L12 18.5l-1.9-6.6L3.5 10l6.6-1.4L12 2z"/></svg>',
+  frown:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9.3"/><path d="M8.2 15.8a4.6 4.6 0 0 1 7.6 0"/><circle cx="9" cy="10" r=".9" fill="currentColor" stroke="none"/><circle cx="15" cy="10" r=".9" fill="currentColor" stroke="none"/></svg>'
+};
+
 function buildContacts(c){
   const l=[];
-  if(c.phone)l.push({href:'tel:'+c.phone,ico:'📞',lbl:'Téléphone',val:c.phone});
+  if(c.phone)l.push({href:'tel:'+c.phone,ico:UI_ICONS.phone,lbl:'Téléphone',val:c.phone});
   const wa=c.whatsapp||c.phone;
-  if(wa)l.push({href:'https://wa.me/'+wa.replace(/\D/g,''),ico:'💬',lbl:'WhatsApp',val:'Message direct',t:1});
-  if(c.email)l.push({href:'mailto:'+c.email,ico:'✉️',lbl:'E-mail',val:c.email});
-  if(c.website)l.push({href:c.website,ico:'🌐',lbl:'Site web',val:c.website.replace(/https?:\/\//,''),t:1});
+  if(wa)l.push({href:'https://wa.me/'+wa.replace(/\D/g,''),ico:UI_ICONS.whatsapp,color:'#25D366',lbl:'WhatsApp',val:'Message direct',t:1});
+  if(c.email)l.push({href:'mailto:'+c.email,ico:UI_ICONS.mail,lbl:'E-mail',val:c.email});
+  if(c.website)l.push({href:c.website,ico:UI_ICONS.globe,lbl:'Site web',val:c.website.replace(/https?:\/\//,''),t:1});
   if(c.location){
     const href=c.location.startsWith('http')?c.location:'https://maps.google.com/?q='+encodeURIComponent(c.location);
-    l.push({href,ico:'📍',lbl:'Adresse',val:c.location.startsWith('http')?'Voir sur la carte':c.location,t:1});
+    l.push({href,ico:UI_ICONS.mapPin,lbl:'Adresse',val:c.location.startsWith('http')?'Voir sur la carte':c.location,t:1});
   }
-  if(c.cv_url)l.push({href:c.cv_url,ico:'📄',lbl:'CV / Portfolio',val:'Télécharger',t:1});
+  if(c.cv_url)l.push({href:c.cv_url,ico:UI_ICONS.fileText,lbl:'CV / Portfolio',val:'Télécharger',t:1});
   return l;
 }
  
@@ -281,8 +309,8 @@ function buildCatalogue(c){
     const price=item.price;
     const img=item.image_url;
     const imgHTML=img
-      ?`<img src="${img}" alt="${name}" onerror="this.parentElement.innerHTML='<div class=cat-img-placeholder>🛒</div>'">`
-      :`<div class="cat-img-placeholder">🛒</div>`;
+      ?`<img src="${img}" alt="${name}" onerror="imgFallback(this,'bag','cat-img-placeholder')">`
+      :`<div class="cat-img-placeholder">${UI_ICONS.bag}</div>`;
     const priceHTML=price?`<div class="cat-price">${Number(price).toLocaleString('fr-FR')} FCFA</div>`:'';
     const descHTML=desc?`<div class="cat-desc">${desc}</div>`:'';
     const encoded=encodeURIComponent(JSON.stringify(item));
@@ -298,7 +326,7 @@ function buildCatalogue(c){
  
   return `<div class="sec">
     <div class="sec-header">
-      <div class="sec-ico">🛍️</div>
+      <div class="sec-ico">${UI_ICONS.bag}</div>
       <span class="sec-lbl">Catalogue produits</span>
     </div>
     <div class="cat-scroll">${cards}</div>
@@ -311,8 +339,8 @@ function openLb(encodedOrObj){
   try{ item=typeof encodedOrObj==='string'?JSON.parse(encodedOrObj):encodedOrObj; }catch(e){return;}
   const img=item.image_url;
   const imgHTML=img
-    ?`<img class="lb-img" src="${img}" alt="${item.title||''}" onerror="this.parentElement.innerHTML='<div class=lb-img-placeholder>🛒</div>'">`
-    :`<div class="lb-img-placeholder">🛒</div>`;
+    ?`<img class="lb-img" src="${img}" alt="${item.title||''}" onerror="imgFallback(this,'bag','lb-img-placeholder')">`
+    :`<div class="lb-img-placeholder">${UI_ICONS.bag}</div>`;
   document.getElementById('lbImgWrap').innerHTML=imgHTML;
   document.getElementById('lbName').textContent=item.title||item.name||'';
   document.getElementById('lbDesc').textContent=item.desc||item.description||'';
@@ -370,13 +398,13 @@ function render(c){
     ?`<div class="company-card"><div class="co-left"><div class="co-logo"><img src="https://printlegacy.github.io/assets/logo.png" alt="PL" onerror="this.style.display='none'"></div><div><div class="co-name">${c.company}</div><span class="co-badge">Entreprise principale</span></div></div><div class="co-arr">›</div></div>`
     :'';
   const aboutHTML=c.bio
-    ?`<div class="sec"><div class="sec-header"><div class="sec-ico">👤</div><span class="sec-lbl">À propos</span></div><p class="about-txt">${c.bio}</p></div><div class="divider"><span></span></div>`
+    ?`<div class="sec"><div class="sec-header"><div class="sec-ico">${UI_ICONS.user}</div><span class="sec-lbl">À propos</span></div><p class="about-txt">${c.bio}</p></div><div class="divider"><span></span></div>`
     :'';
   const contactHTML=contacts.length
-    ?`<div class="sec"><div class="sec-header"><div class="sec-ico">📋</div><span class="sec-lbl">Contact</span></div><div class="contact-list">${contacts.map(l=>`<a href="${l.href}" class="clink" ${l.t?'target="_blank"':''}><div class="clink-ico">${l.ico}</div><div class="clink-body"><span class="clink-lbl">${l.lbl}</span><span class="clink-val">${l.val}</span></div><span class="clink-arr">›</span></a>`).join('')}</div></div><div class="divider"><span></span></div>`
+    ?`<div class="sec"><div class="sec-header"><div class="sec-ico">${UI_ICONS.idcard}</div><span class="sec-lbl">Contact</span></div><div class="contact-list">${contacts.map(l=>`<a href="${l.href}" class="clink" ${l.t?'target="_blank"':''}><div class="clink-ico" style="${l.color?'color:'+l.color:''}">${l.ico}</div><div class="clink-body"><span class="clink-lbl">${l.lbl}</span><span class="clink-val">${l.val}</span></div><span class="clink-arr">›</span></a>`).join('')}</div></div><div class="divider"><span></span></div>`
     :'';
   const socialHTML=socials.length
-    ?`<div class="sec"><div class="sec-header"><div class="sec-ico">🌐</div><span class="sec-lbl">Réseaux sociaux</span></div><div class="soc-grid">${socials.map(s=>`<a href="${s.href}" target="_blank" class="soc-btn"><span class="soc-ico" style="background:${s.bg}">${s.ico}</span><span class="soc-name">${s.name}</span></a>`).join('')}</div></div><div class="divider"><span></span></div>`
+    ?`<div class="sec"><div class="sec-header"><div class="sec-ico">${UI_ICONS.share}</div><span class="sec-lbl">Réseaux sociaux</span></div><div class="soc-grid">${socials.map(s=>`<a href="${s.href}" target="_blank" class="soc-btn"><span class="soc-ico" style="background:${s.bg}">${s.ico}</span><span class="soc-name">${s.name}</span></a>`).join('')}</div></div><div class="divider"><span></span></div>`
     :'';
  
   document.getElementById('app').innerHTML=`
@@ -406,12 +434,12 @@ function render(c){
 async function init(){
   const slug=getSlug();
   if(!slug){
-    document.getElementById('app').innerHTML=`<div class="err"><div style="font-size:2.5rem">✦</div><h2>Print Legacy</h2><p>Plateforme de cartes digitales NFC.</p><a href="https://printlegacy.github.io">← Voir le site</a></div>`;
+    document.getElementById('app').innerHTML=`<div class="err"><div style="width:44px;height:44px;color:var(--gold)">${UI_ICONS.sparkle}</div><h2>Print Legacy</h2><p>Plateforme de cartes digitales NFC.</p><a href="https://printlegacy.github.io">← Voir le site</a></div>`;
     return;
   }
   const {data,error}=await sb.from('clients').select('*').eq('slug',slug).eq('status','active').single();
   if(error||!data){
-    document.getElementById('app').innerHTML=`<div class="err"><div style="font-size:2.5rem">😕</div><h2>Carte introuvable</h2><p>Le profil "<strong>${slug}</strong>" n'est pas encore activé.</p><a href="https://printlegacy.github.io">← Accueil</a></div>`;
+    document.getElementById('app').innerHTML=`<div class="err"><div style="width:44px;height:44px;color:var(--muted)">${UI_ICONS.frown}</div><h2>Carte introuvable</h2><p>Le profil "<strong>${slug}</strong>" n'est pas encore activé.</p><a href="https://printlegacy.github.io">← Accueil</a></div>`;
     return;
   }
   render(data);
