@@ -91,15 +91,23 @@ body{display:flex;justify-content:center;padding-bottom:90px}
 .lb-sheet{background:var(--white);border-radius:22px 22px 0 0;width:100%;max-width:420px;overflow:hidden;box-shadow:0 -8px 40px rgba(0,0,0,.3);animation:slideUp .25s ease}
 @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
 /* FIX : image complète sans recadrage */
-.lb-img{width:100%;max-height:300px;object-fit:contain;display:block;background:var(--cream2)}
+.lb-img{width:100%;max-height:360px;object-fit:contain;display:block;background:var(--cream2)}
 .lb-img-placeholder{width:100%;height:160px;background:var(--cream2);display:flex;align-items:center;justify-content:center;color:var(--muted);opacity:.45}
 .lb-img-placeholder svg{width:48px;height:48px}
 .lb-body{padding:1.2rem 1.3rem 2rem}
 .lb-name{font-family:"Playfair Display",serif;font-size:1.2rem;font-weight:700;color:var(--ink);margin-bottom:.4rem}
 .lb-desc{font-size:.82rem;color:var(--muted);line-height:1.75;margin-bottom:.8rem}
 .lb-price{font-family:"Playfair Display",serif;font-size:1.4rem;font-weight:700;color:var(--gold)}
+.lb-order-btn{display:block;width:100%;margin-top:1rem;padding:.85rem;border-radius:12px;background:var(--ink);color:#fff;text-align:center;font-weight:700;font-size:.78rem;letter-spacing:.05em;text-transform:uppercase;text-decoration:none;font-family:"DM Sans",sans-serif}
 .lb-close{position:absolute;top:.9rem;right:1rem;width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,.35);border:none;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10;backdrop-filter:blur(4px)}
 .lb-close svg{width:15px;height:15px}
+.lb-counter{position:absolute;top:.7rem;left:.7rem;z-index:10;color:#fff;font-size:.68rem;letter-spacing:.05em;background:rgba(0,0,0,.35);padding:4px 10px;border-radius:100px;backdrop-filter:blur(4px)}
+.lb-img-stage{position:relative}
+.lb-nav{position:absolute;top:50%;transform:translateY(-50%);z-index:10;width:38px;height:38px;border-radius:50%;background:rgba(0,0,0,.35);border:none;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:20px;backdrop-filter:blur(4px);transition:background .15s;user-select:none}
+.lb-nav:hover{background:rgba(0,0,0,.55)}
+.lb-nav.disabled{opacity:.25;pointer-events:none}
+.lb-nav-prev{left:.7rem}
+.lb-nav-next{right:.7rem}
 .lb-handle{width:36px;height:4px;background:var(--cream2);border-radius:2px;margin:10px auto 0;cursor:pointer}
  
 .save-bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:420px;background:var(--ink);padding:.8rem 1.2rem;display:flex;align-items:center;justify-content:space-between;z-index:100;box-shadow:0 -4px 24px rgba(0,0,0,.2)}
@@ -136,11 +144,17 @@ body{display:flex;justify-content:center;padding-bottom:90px}
     <button class="lb-close" onclick="closeLb()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12"/><path d="M18 6L6 18"/></svg></button>
     <div class="lb-sheet">
       <div class="lb-handle" onclick="closeLb()"></div>
-      <div id="lbImgWrap"></div>
+      <div class="lb-img-stage">
+        <div id="lbImgWrap"></div>
+        <div class="lb-counter" id="lbCounter"></div>
+        <button class="lb-nav lb-nav-prev" id="lbPrev" onclick="navLb(-1)">‹</button>
+        <button class="lb-nav lb-nav-next" id="lbNext" onclick="navLb(1)">›</button>
+      </div>
       <div class="lb-body">
         <div class="lb-name" id="lbName"></div>
         <div class="lb-desc" id="lbDesc"></div>
         <div class="lb-price" id="lbPrice"></div>
+        <div id="lbOrderBtnWrap"></div>
       </div>
     </div>
   </div>
@@ -319,8 +333,10 @@ function buildCatalogue(c){
     else if(typeof c.catalogue==='string'&&c.catalogue) items=JSON.parse(c.catalogue);
   }catch(e){}
   if(!items||!items.length) return '';
+  window.catalogueItems=items;
+  window.catalogueMeta={waBase:(c.whatsapp||c.phone||'').replace(/\D/g,''),company:c.company||''};
  
-  const cards=items.map(item=>{
+  const cards=items.map((item,idx)=>{
     const name=item.title||item.name||'';
     const desc=item.desc||item.description||'';
     const price=item.price;
@@ -330,8 +346,7 @@ function buildCatalogue(c){
       :`<div class="cat-img-placeholder">${UI_ICONS.bag}</div>`;
     const priceHTML=price?`<div class="cat-price">${Number(price).toLocaleString('fr-FR')} FCFA</div>`:'';
     const descHTML=desc?`<div class="cat-desc">${desc}</div>`:'';
-    const encoded=encodeURIComponent(JSON.stringify(item));
-    return `<div class="cat-card" onclick="openLb(decodeURIComponent('${encoded}'))">
+    return `<div class="cat-card" onclick="openLb(${idx})">
       <div class="cat-img-wrap">${imgHTML}</div>
       <div class="cat-body">
         <div class="cat-name">${name}</div>
@@ -351,9 +366,12 @@ function buildCatalogue(c){
   <div class="divider"><span></span></div>`;
 }
  
-function openLb(encodedOrObj){
-  let item;
-  try{ item=typeof encodedOrObj==='string'?JSON.parse(encodedOrObj):encodedOrObj; }catch(e){return;}
+let lbIndex=0;
+function renderLb(){
+  const items=window.catalogueItems||[];
+  const meta=window.catalogueMeta||{};
+  const item=items[lbIndex];
+  if(!item) return;
   const img=item.image_url;
   const imgHTML=img
     ?`<img class="lb-img" src="${img}" alt="${item.title||''}" onerror="imgFallback(this,'bag','lb-img-placeholder')">`
@@ -363,13 +381,51 @@ function openLb(encodedOrObj){
   document.getElementById('lbDesc').textContent=item.desc||item.description||'';
   const price=item.price;
   document.getElementById('lbPrice').textContent=price?Number(price).toLocaleString('fr-FR')+' FCFA':'';
+  const name=item.title||item.name||'cet article';
+  const orderMsg=encodeURIComponent(`Bonjour${meta.company?' '+meta.company:''}, je suis intéressé(e) par : ${name}`);
+  document.getElementById('lbOrderBtnWrap').innerHTML=meta.waBase
+    ?`<a href="https://wa.me/${meta.waBase}?text=${orderMsg}" target="_blank" class="lb-order-btn">Commander sur WhatsApp</a>`
+    :'';
+  document.getElementById('lbCounter').textContent=items.length>1?`${lbIndex+1} / ${items.length}`:'';
+  const single=items.length<=1;
+  document.getElementById('lbPrev').classList.toggle('disabled',single);
+  document.getElementById('lbNext').classList.toggle('disabled',single);
+}
+function openLb(idx){
+  lbIndex=idx;
+  renderLb();
   document.getElementById('lbOv').classList.add('open');
   document.body.style.overflow='hidden';
+}
+function navLb(dir){
+  const items=window.catalogueItems||[];
+  if(items.length<2) return;
+  lbIndex=(lbIndex+dir+items.length)%items.length;
+  renderLb();
 }
 function closeLb(){
   document.getElementById('lbOv').classList.remove('open');
   document.body.style.overflow='';
 }
+(function(){
+  let touchStartX=0;
+  document.addEventListener('DOMContentLoaded',()=>{
+    const ov=document.getElementById('lbOv');
+    if(!ov) return;
+    ov.addEventListener('touchstart',(e)=>{ touchStartX=e.touches[0].clientX; },{passive:true});
+    ov.addEventListener('touchend',(e)=>{
+      const dx=e.changedTouches[0].clientX-touchStartX;
+      if(Math.abs(dx)>50) navLb(dx>0?-1:1);
+    },{passive:true});
+  });
+  document.addEventListener('keydown',(e)=>{
+    const ov=document.getElementById('lbOv');
+    if(!ov||!ov.classList.contains('open')) return;
+    if(e.key==='Escape') closeLb();
+    if(e.key==='ArrowLeft') navLb(-1);
+    if(e.key==='ArrowRight') navLb(1);
+  });
+})();
 
 // Déplie / replie le panneau d'infos entreprise (à propos, horaires, localisation) au clic sur la flèche
 function toggleCompanyDetails(){
