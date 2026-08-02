@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Modifier ma carte — Print Legacy</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--ink:#0A0A0A;--gold:#B8953A;--gold2:#D4AF6A;--gold4:#F5EDD0;--cream:#F9F5EE;--cream2:#EDE5D0;--smoke:#6B6560;--smoke2:#9A948E;--w:#fff;--r:6px}
+html,body{min-height:100%;font-family:'Jost',sans-serif;background:var(--cream);color:var(--ink)}
+.top{background:var(--ink);padding:1.1rem 1.3rem;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:50}
+.top-title{font-family:'Cormorant Garamond',serif;color:#fff;font-size:1.15rem}
+.top-title em{color:var(--gold2);font-style:italic}
+.top-sub{font-size:.68rem;color:rgba(255,255,255,.45);margin-top:2px}
+.wrap{max-width:640px;margin:0 auto;padding:1.4rem 1.2rem 7rem}
+.state{text-align:center;padding:4rem 1.5rem;color:var(--smoke2);font-size:.85rem}
+.state .ico{font-size:2.2rem;margin-bottom:.8rem}
+.card{background:var(--w);border-radius:10px;box-shadow:0 4px 24px rgba(0,0,0,.05);overflow:hidden;margin-bottom:1rem}
+.sec-hd{padding:.9rem 1.1rem .5rem;font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--smoke2);border-bottom:1px solid var(--cream2);margin-bottom:.9rem}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;padding:0 1.1rem 1.1rem}
+.field{display:flex;flex-direction:column;gap:5px}
+.field.full{grid-column:1/-1}
+.field label{font-size:.65rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--smoke2)}
+.field input,.field textarea{padding:.7rem .8rem;border:1px solid var(--cream2);border-radius:var(--r);font-size:.85rem;font-family:'Jost',sans-serif;color:var(--ink);background:var(--w);outline:none;transition:.15s}
+.field input:focus,.field textarea:focus{border-color:var(--gold);background:#FFFDF7}
+.field textarea{resize:vertical}
+.cover-zone{width:100%;height:120px;border-radius:8px;border:2px dashed var(--cream2);cursor:pointer;position:relative;background:var(--cream);display:flex;align-items:center;justify-content:center;overflow:hidden;transition:.2s}
+.cover-zone:hover{border-color:var(--gold);background:var(--gold4)}
+.cover-zone img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none}
+.cz-hint{font-size:.75rem;color:var(--smoke2);text-align:center;pointer-events:none}
+.cz-overlay{position:absolute;inset:0;background:rgba(0,0,0,.4);display:none;align-items:center;justify-content:center;color:#fff;font-size:.75rem;font-weight:600}
+.cover-zone:hover .cz-overlay{display:flex}
+.cz-meta{display:none;align-items:center;gap:8px;margin-top:6px;font-size:.68rem;color:var(--smoke2)}
+.cz-meta button{background:none;border:none;color:#C62828;cursor:pointer;font-size:.68rem;font-family:'Jost',sans-serif}
+.logo-zone{width:70px;height:70px;flex-shrink:0}
+.theme-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.theme-opt{border-radius:6px;overflow:hidden;cursor:pointer;border:2px solid transparent;transition:.15s}
+.theme-opt.sel{border-color:var(--gold)}
+.theme-top{height:30px}
+.theme-bot{height:18px;display:flex;align-items:center;justify-content:center;font-size:.5rem;font-weight:600;text-transform:uppercase}
+.cat-row{display:flex;align-items:center;gap:8px;padding:.6rem .7rem;background:var(--cream);border:1px solid var(--cream2);border-radius:var(--r);margin-bottom:.5rem}
+.cat-thumb{width:48px;height:48px;border-radius:6px;background:var(--cream2);border:2px dashed var(--cream2);display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;flex-shrink:0;overflow:hidden;position:relative}
+.cat-thumb img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
+.cat-fields{flex:1;display:grid;grid-template-columns:1fr 1fr 70px;gap:5px}
+.cat-inp{padding:.4rem .55rem;border:1px solid var(--cream2);border-radius:var(--r);font-size:.75rem;font-family:'Jost',sans-serif;background:var(--w);outline:none;width:100%}
+.cat-del{width:24px;height:24px;border-radius:50%;background:#FFEBEE;border:1px solid #FFCDD2;color:#C62828;cursor:pointer;font-size:12px;flex-shrink:0}
+.cat-add{display:flex;align-items:center;justify-content:center;gap:6px;width:calc(100% - 2.2rem);margin:0 1.1rem 1.1rem;padding:.7rem;border:2px dashed var(--cream2);border-radius:var(--r);background:none;font-size:.75rem;font-weight:600;color:var(--smoke);cursor:pointer;transition:.15s}
+.cat-add:hover{border-color:var(--gold);color:var(--gold);background:var(--gold4)}
+.save-bar{position:fixed;bottom:0;left:0;right:0;background:var(--ink);padding:.9rem 1.2rem;display:flex;gap:.6rem;z-index:60;box-shadow:0 -4px 20px rgba(0,0,0,.15)}
+.save-btn{flex:1;background:var(--gold2);color:var(--ink);border:none;border-radius:var(--r);padding:.9rem;font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;font-family:'Jost',sans-serif;transition:.15s}
+.save-btn:hover{background:#fff}
+.save-btn:disabled{opacity:.5;cursor:not-allowed}
+.view-link{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.2);border-radius:var(--r);padding:.9rem 1.1rem;font-size:.75rem;font-weight:600;cursor:pointer;text-decoration:none;display:flex;align-items:center;font-family:'Jost',sans-serif}
+.toast{display:none;position:fixed;bottom:88px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--cream);padding:.6rem 1.2rem;border-radius:100px;font-size:.75rem;font-weight:500;z-index:9999;white-space:nowrap;box-shadow:0 8px 24px rgba(0,0,0,.2)}
+.toast.show{display:block}
+@media(max-width:480px){.grid{grid-template-columns:1fr}.theme-grid{grid-template-columns:repeat(4,1fr)}}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <div>
+    <div class="top-title">Print <em>Legacy</em></div>
+    <div class="top-sub" id="topSub">Modifier ma carte</div>
+  </div>
+</div>
+
+<div class="wrap" id="wrap">
+  <div class="state" id="loadingState"><div class="ico">⏳</div>Chargement de votre profil...</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const {createClient}=supabase;
+const sb=createClient(
+  'https://szpjpytpciptplqjfwyd.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN6cGpweXRwY2lwdHBscWpmd3lkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc2NDA3MTMsImV4cCI6MjA5MzIxNjcxM30.WWXHihsbAKge_oHdbBAPLM40swm2P0XMco7kSrCO9e4'
+);
+
+const THEMES=[
+  {id:'noir',name:'Noir & Or',h1:'#0A0A0A',ac:'#D4AF6A',tc:'#0A0A0A'},
+  {id:'emerald',name:'Émeraude',h1:'#0D3B2E',ac:'#4CAF50',tc:'#fff'},
+  {id:'navy',name:'Navy',h1:'#0A1628',ac:'#4A90D9',tc:'#fff'},
+  {id:'crimson',name:'Cramoisi',h1:'#1A0808',ac:'#C62828',tc:'#fff'},
+  {id:'ivory',name:'Ivoire',h1:'#1C160A',ac:'#C9A84C',tc:'#fff'},
+  {id:'violet',name:'Violet',h1:'#1A0A2E',ac:'#9C27B0',tc:'#fff'},
+  {id:'bordeaux',name:'Bordeaux',h1:'#1A0812',ac:'#C2185B',tc:'#fff'},
+  {id:'sable',name:'Sable',h1:'#1C1208',ac:'#CD853F',tc:'#fff'},
+  {id:'slate',name:'Ardoise',h1:'#0D1B2A',ac:'#607D8B',tc:'#fff'},
+  {id:'rosegold',name:'Rose Gold',h1:'#1A0F0F',ac:'#E8A0B0',tc:'#4a2030'},
+  {id:'tropical',name:'Tropical',h1:'#051F0D',ac:'#26A69A',tc:'#fff'},
+  {id:'midnight',name:'Minuit',h1:'#05051A',ac:'#5C6BC0',tc:'#fff'},
+  {id:'coffee',name:'Café',h1:'#1A1008',ac:'#8D6E63',tc:'#fff'},
+  {id:'forest',name:'Forêt',h1:'#0A1A0A',ac:'#388E3C',tc:'#fff'},
+  {id:'ocean',name:'Océan',h1:'#00101A',ac:'#0277BD',tc:'#fff'},
+  {id:'sand',name:'Désert',h1:'#1A1510',ac:'#D4A853',tc:'#fff'},
+  {id:'plum',name:'Prune',h1:'#140A1A',ac:'#6A1B9A',tc:'#fff'},
+  {id:'coral',name:'Corail',h1:'#1A0A08',ac:'#E64A19',tc:'#fff'},
+  {id:'arctic',name:'Arctique',h1:'#0A1018',ac:'#80CBC4',tc:'#004D40'},
+  {id:'bronze',name:'Bronze',h1:'#120E08',ac:'#A0744C',tc:'#fff'},
+];
+
+let client=null, currentTheme='noir', currentToken=null;
+let catRows=[], catCounter=0;
+const catFiles={};
+let newCoverFile=null, coverDeleted=false;
+let newCompanyLogoFile=null, companyLogoDeleted=false;
+
+function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+async function init(){
+  const params=new URLSearchParams(window.location.search);
+  const slug=params.get('slug')||params.get('carte');
+  const token=params.get('token');
+  if(!slug||!token){renderState('🔒','Lien invalide ou incomplet — le jeton de sécurité est manquant. Utilisez le lien fourni par email ou WhatsApp.');return;}
+  currentToken=token;
+  try{
+    const {data,error}=await sb.from('clients').select('*').eq('slug',slug).eq('edit_token',token).single();
+    if(error||!data){renderState('🔒','Accès refusé — ce lien est invalide ou a expiré. Contactez-nous si vous pensez qu\'il s\'agit d\'une erreur.');return;}
+    client=data;
+    renderForm(data);
+  }catch(err){
+    renderState('🔧','Connexion indisponible pour le moment. Réessayez dans quelques instants.');
+  }
+}
+
+function renderState(ico,msg){
+  document.getElementById('wrap').innerHTML=`<div class="state"><div class="ico">${ico}</div>${msg}</div>`;
+}
+
+function renderForm(c){
+  document.getElementById('topSub').textContent='Modifier ma carte — '+((c.firstname||'')+' '+(c.lastname||'')).trim();
+  const PRODUCT_LABEL={student:'Carte NFC Student',pro:'Carte NFC Pro',porteclefs:'Porte-clés NFC',plaque:'Plaque NFC',bracelet:'Bracelet NFC'};
+  const isBusiness=(c.produit==='plaque');
+
+  document.getElementById('wrap').innerHTML=`
+    <div class="card">
+      <div class="sec-hd">Identité ${PRODUCT_LABEL[c.produit]?'· '+PRODUCT_LABEL[c.produit]:''}</div>
+      <div class="grid">
+        <div class="field full">
+          <label>🖼️ Photo de couverture</label>
+          <div class="cover-zone" id="coverZone" onclick="document.getElementById('coverInput').click()">
+            <input type="file" id="coverInput" accept="image/*" style="display:none" onchange="onCoverChange(event)">
+            <img id="coverImg">
+            <div class="cz-hint" id="coverHint"><div style="font-size:1.3rem">🖼️</div><div>Cliquer pour changer</div></div>
+            <div class="cz-overlay">📷 Changer</div>
+          </div>
+          <div class="cz-meta" id="coverMeta"><span id="coverMetaName"></span><button onclick="clearCover(event)">✕ Supprimer</button></div>
+        </div>
+        <div class="field"><label>Prénom</label><input id="f-firstname" value="${esc(c.firstname)}"></div>
+        <div class="field"><label>Nom</label><input id="f-lastname" value="${esc(c.lastname)}"></div>
+        <div class="field"><label>${isBusiness?'Fonction':'Poste'}</label><input id="f-jobtitle" value="${esc(c.jobtitle)}"></div>
+        <div class="field"><label>${isBusiness?"Nom de l'établissement":'Entreprise'}</label><input id="f-company" value="${esc(c.company)}"></div>
+        <div class="field full"><label>Bio</label><textarea id="f-bio" rows="3">${esc(c.bio)}</textarea></div>
+        <div class="field"><label>Localisation</label><input id="f-location" value="${esc(c.location)}"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="sec-hd">Entreprise</div>
+      <div class="grid">
+        <div class="field full">
+          <label>🏢 Logo</label>
+          <div style="display:flex;align-items:center;gap:12px">
+            <div class="cover-zone logo-zone" id="logoZone" onclick="document.getElementById('logoInput').click()">
+              <input type="file" id="logoInput" accept="image/*" style="display:none" onchange="onLogoChange(event)">
+              <img id="logoImg" style="object-fit:contain;padding:8px">
+              <div class="cz-hint" id="logoHint" style="font-size:1.1rem">🏢</div>
+              <div class="cz-overlay">📷</div>
+            </div>
+            <div style="flex:1">
+              <div class="cz-meta" id="logoMeta" style="display:none"><span id="logoMetaName"></span><button onclick="clearLogo(event)">✕ Supprimer</button></div>
+            </div>
+          </div>
+        </div>
+        <div class="field full"><label>À propos</label><textarea id="f-company_about" rows="3">${esc(c.company_about)}</textarea></div>
+        <div class="field full"><label>Horaires d'ouverture</label><input id="f-company_hours" value="${esc(c.company_hours)}" placeholder="Lun-Ven 9h-18h"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="sec-hd">Contact</div>
+      <div class="grid">
+        <div class="field"><label>Téléphone</label><input id="f-phone" value="${esc(c.phone)}"></div>
+        <div class="field"><label>WhatsApp</label><input id="f-whatsapp" value="${esc(c.whatsapp)}"></div>
+        <div class="field"><label>Email</label><input id="f-email" value="${esc(c.email)}"></div>
+        <div class="field"><label>Site web</label><input id="f-website" value="${esc(c.website)}"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="sec-hd">Réseaux sociaux</div>
+      <div class="grid">
+        <div class="field"><label>📸 Instagram</label><input id="f-instagram" value="${esc(c.instagram)}" placeholder="@compte"></div>
+        <div class="field"><label>💼 LinkedIn</label><input id="f-linkedin" value="${esc(c.linkedin)}"></div>
+        <div class="field"><label>🎵 TikTok</label><input id="f-tiktok" value="${esc(c.tiktok)}" placeholder="@compte"></div>
+        <div class="field"><label>👻 Snapchat</label><input id="f-snapchat" value="${esc(c.snapchat)}" placeholder="@compte"></div>
+        <div class="field"><label>▶️ YouTube</label><input id="f-youtube" value="${esc(c.youtube)}"></div>
+        <div class="field"><label>📘 Facebook</label><input id="f-facebook" value="${esc(c.facebook)}"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="sec-hd">Catalogue produits / services</div>
+      <div style="padding:0 1.1rem"><div id="catRowsList"></div></div>
+      <button class="cat-add" id="catAddBtn">＋ Ajouter un produit</button>
+    </div>
+
+    <div class="card">
+      <div class="sec-hd">Apparence — thème couleur</div>
+      <div style="padding:0 1.1rem 1.1rem"><div class="theme-grid" id="themeGrid"></div></div>
+    </div>
+  `;
+
+  // Cover
+  const cimg=document.getElementById('coverImg');
+  if(c.cover_url){cimg.src=c.cover_url;cimg.style.display='block';document.getElementById('coverHint').style.display='none';showCoverMeta(c.cover_url.split('/').pop().slice(0,40));}
+
+  // Company logo
+  const limg=document.getElementById('logoImg');
+  if(c.company_logo_url){limg.src=c.company_logo_url;limg.style.display='block';document.getElementById('logoHint').style.display='none';showLogoMeta(c.company_logo_url.split('/').pop().slice(0,30));}
+
+  // Theme grid
+  const tg=document.getElementById('themeGrid');
+  currentTheme=c.theme||'noir';
+  THEMES.forEach(t=>{
+    tg.innerHTML+=`<div class="theme-opt${t.id===currentTheme?' sel':''}" id="th-${t.id}" onclick="selTheme('${t.id}')">
+      <div class="theme-top" style="background:${t.h1}"></div>
+      <div class="theme-bot" style="background:${t.ac};color:${t.tc}">${t.name}</div>
+    </div>`;
+  });
+
+  // Catalogue rows
+  catRows=[];catCounter=0;
+  Object.keys(catFiles).forEach(k=>delete catFiles[k]);
+  let items=[];
+  try{items=Array.isArray(c.catalogue)?c.catalogue:(typeof c.catalogue==='string'&&c.catalogue?JSON.parse(c.catalogue):[]);}catch(e){}
+  items.forEach(item=>addCatRow(item));
+  document.getElementById('catAddBtn').onclick=()=>addCatRow();
+
+  // Save bar
+  const bar=document.createElement('div');
+  bar.className='save-bar';
+  bar.innerHTML=`<a href="https://printlegacy-platform.vercel.app/?carte=${c.slug}" target="_blank" class="view-link">👁️ Voir ma carte</a>
+    <button class="save-btn" id="saveBtn" onclick="save()">💾 Enregistrer</button>`;
+  document.body.appendChild(bar);
+}
+
+function selTheme(id){
+  document.querySelectorAll('.theme-opt').forEach(t=>t.classList.remove('sel'));
+  document.getElementById('th-'+id)?.classList.add('sel');
+  currentTheme=id;
+}
+
+function onCoverChange(e){
+  const f=e.target.files[0];if(!f)return;
+  newCoverFile=f;coverDeleted=false;
+  const r=new FileReader();
+  r.onload=x=>{const img=document.getElementById('coverImg');img.src=x.target.result;img.style.display='block';document.getElementById('coverHint').style.display='none';showCoverMeta(f.name);};
+  r.readAsDataURL(f);
+}
+function showCoverMeta(name){document.getElementById('coverMeta').style.display='flex';document.getElementById('coverMetaName').textContent=name;}
+function clearCover(e){
+  e.stopPropagation();coverDeleted=true;newCoverFile=null;
+  const img=document.getElementById('coverImg');img.style.display='none';img.src='';
+  document.getElementById('coverHint').style.display='block';
+  document.getElementById('coverMeta').style.display='none';
+  document.getElementById('coverInput').value='';
+}
+
+function onLogoChange(e){
+  const f=e.target.files[0];if(!f)return;
+  newCompanyLogoFile=f;companyLogoDeleted=false;
+  const r=new FileReader();
+  r.onload=x=>{const img=document.getElementById('logoImg');img.src=x.target.result;img.style.display='block';document.getElementById('logoHint').style.display='none';showLogoMeta(f.name);};
+  r.readAsDataURL(f);
+}
+function showLogoMeta(name){document.getElementById('logoMeta').style.display='flex';document.getElementById('logoMetaName').textContent=name;}
+function clearLogo(e){
+  e.stopPropagation();companyLogoDeleted=true;newCompanyLogoFile=null;
+  const img=document.getElementById('logoImg');img.style.display='none';img.src='';
+  document.getElementById('logoHint').style.display='block';
+  document.getElementById('logoMeta').style.display='none';
+  document.getElementById('logoInput').value='';
+}
+
+function addCatRow(existing){
+  const id=++catCounter;
+  const row={id,title:existing?.title||'',desc:existing?.desc||'',price:existing?.price||'',image_url:existing?.image_url||null};
+  catRows.push(row);
+  catFiles[id]={file:null,previewUrl:existing?.image_url||null,uploadedUrl:existing?.image_url||null};
+  const wrap=document.getElementById('catRowsList');
+  const div=document.createElement('div');
+  div.className='cat-row';div.id='catrow-'+id;
+  div.innerHTML=`<div class="cat-thumb" id="catthumb-${id}">
+    ${existing?.image_url?`<img id="catimg-${id}" src="${existing.image_url}">`:`<span id="catimg-${id}">🖼️</span>`}
+  </div>
+  <div class="cat-fields">
+    <input class="cat-inp" type="text" placeholder="Nom" value="${esc(row.title)}" id="catname-${id}">
+    <input class="cat-inp" type="text" placeholder="Description" value="${esc(row.desc)}" id="catdesc-${id}">
+    <input class="cat-inp" type="number" placeholder="Prix" value="${row.price||''}" id="catprice-${id}" style="text-align:right">
+  </div>
+  <button class="cat-del" id="catdel-${id}">✕</button>`;
+  wrap.appendChild(div);
+  div.querySelector('#catthumb-'+id).addEventListener('click',()=>{const inp=document.createElement('input');inp.type='file';inp.accept='image/*';inp.onchange=e=>catFileChange(e,id);inp.click();});
+  div.querySelector('#catdel-'+id).addEventListener('click',()=>{catRows=catRows.filter(r=>r.id!==id);delete catFiles[id];div.remove();});
+}
+
+function catFileChange(e,id){
+  const f=e.target.files[0];if(!f)return;
+  catFiles[id].file=f;
+  const reader=new FileReader();
+  reader.onload=x=>{
+    catFiles[id].previewUrl=x.target.result;
+    const el=document.getElementById('catimg-'+id);
+    if(el&&el.tagName==='IMG'){el.src=x.target.result;}
+    else{const img=document.createElement('img');img.id='catimg-'+id;img.src=x.target.result;if(el)el.replaceWith(img);}
+  };
+  reader.readAsDataURL(f);
+}
+
+async function upFile(file,folder){
+  if(!file)return null;
+  const ext=file.name.split('.').pop();
+  const path=`${folder}/${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`;
+  const {error}=await sb.storage.from('printlegacy').upload(path,file,{upsert:true});
+  if(error){showToast('Erreur upload: '+error.message);return null;}
+  return sb.storage.from('printlegacy').getPublicUrl(path).data.publicUrl;
+}
+
+async function save(){
+  if(!client)return;
+  const btn=document.getElementById('saveBtn');
+  btn.disabled=true;btn.textContent='💾 Enregistrement...';
+  try{
+    const updates={theme:currentTheme};
+    ['firstname','lastname','jobtitle','company','bio','location','phone','whatsapp','email','website','instagram','linkedin','tiktok','snapchat','youtube','facebook','company_about','company_hours'].forEach(f=>{
+      const el=document.getElementById('f-'+f);
+      if(el)updates[f]=el.value.trim()||null;
+    });
+    if(newCoverFile){const url=await upFile(newCoverFile,'covers');if(url)updates.cover_url=url;}
+    else if(coverDeleted){updates.cover_url=null;}
+    if(newCompanyLogoFile){const url=await upFile(newCompanyLogoFile,'company-logos');if(url)updates.company_logo_url=url;}
+    else if(companyLogoDeleted){updates.company_logo_url=null;}
+    const catalogue=[];
+    for(const row of catRows){
+      let imgUrl=catFiles[row.id]?.uploadedUrl||row.image_url||null;
+      if(catFiles[row.id]?.file){const uploaded=await upFile(catFiles[row.id].file,'catalogue');if(uploaded){imgUrl=uploaded;catFiles[row.id].uploadedUrl=uploaded;}}
+      const title=(document.getElementById('catname-'+row.id)?.value||row.title||'').trim();
+      const desc=(document.getElementById('catdesc-'+row.id)?.value||row.desc||'').trim();
+      const price=document.getElementById('catprice-'+row.id)?.value||row.price||'';
+      if(title||desc||price) catalogue.push({title,desc,price:price?parseInt(price):null,image_url:imgUrl});
+    }
+    updates.catalogue=catalogue.length>0?catalogue:null;
+
+    const {data,error}=await sb.rpc('update_client_profile',{
+      p_slug: client.slug,
+      p_token: currentToken,
+      p_updates: updates
+    });
+    if(error)throw error;
+    if(!data||data.length===0){
+      showToast('⚠️ Aucune modification enregistrée — jeton invalide');
+    }else{
+      client={...client,...data[0]};
+      showToast('✓ Votre carte a été mise à jour !');
+    }
+  }catch(err){
+    showToast('Erreur : '+(err.message||'réessayez plus tard'));
+  }finally{
+    btn.disabled=false;btn.textContent='💾 Enregistrer';
+  }
+}
+
+init();
+</script>
+</body>
+</html>
