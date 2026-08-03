@@ -34,7 +34,9 @@ html,body{min-height:100%;font-family:'Jost',sans-serif;background:var(--cream);
 .cover-zone:hover .cz-overlay{display:flex}
 .cz-meta{display:none;align-items:center;gap:8px;margin-top:6px;font-size:.68rem;color:var(--smoke2)}
 .cz-meta button{background:none;border:none;color:#C62828;cursor:pointer;font-size:.68rem;font-family:'Jost',sans-serif}
-.logo-zone{width:70px;height:70px;flex-shrink:0}
+.logo-zone{width:100px;height:100px;flex-shrink:0}
+.photo-zone{width:100px;height:100px;flex-shrink:0;border-radius:50%}
+.photo-zone img{border-radius:50%;object-fit:cover}
 .theme-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
 .theme-opt{border-radius:6px;overflow:hidden;cursor:pointer;border:2px solid transparent;transition:.15s}
 .theme-opt.sel{border-color:var(--gold)}
@@ -107,6 +109,7 @@ let client=null, currentTheme='noir', currentToken=null;
 let catRows=[], catCounter=0;
 const catFiles={};
 let newCoverFile=null, coverDeleted=false;
+let newPhotoFile=null, photoDeleted=false;
 let newCompanyLogoFile=null, companyLogoDeleted=false;
 
 function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
@@ -155,6 +158,21 @@ function renderForm(c){
           </div>
           <div class="cz-meta" id="coverMeta"><span id="coverMetaName"></span><button onclick="clearCover(event)">✕ Supprimer</button></div>
         </div>
+        ${isBusiness?'':`
+        <div class="field full">
+          <label>👤 Photo de profil</label>
+          <div style="display:flex;align-items:center;gap:12px">
+            <div class="cover-zone photo-zone" id="photoZone" onclick="document.getElementById('photoInput').click()">
+              <input type="file" id="photoInput" accept="image/*" style="display:none" onchange="onPhotoChange(event)">
+              <img id="photoImg">
+              <div class="cz-hint" id="photoHint" style="font-size:1.3rem">👤</div>
+              <div class="cz-overlay">📷</div>
+            </div>
+            <div style="flex:1">
+              <div class="cz-meta" id="photoMeta" style="display:none"><span id="photoMetaName"></span><button onclick="clearPhoto(event)">✕ Supprimer</button></div>
+            </div>
+          </div>
+        </div>`}
         <div class="field"><label>Prénom</label><input id="f-firstname" value="${esc(c.firstname)}"></div>
         <div class="field"><label>Nom</label><input id="f-lastname" value="${esc(c.lastname)}"></div>
         <div class="field"><label>${isBusiness?'Fonction':'Poste'}</label><input id="f-jobtitle" value="${esc(c.jobtitle)}"></div>
@@ -224,6 +242,10 @@ function renderForm(c){
   const cimg=document.getElementById('coverImg');
   if(c.cover_url){cimg.src=c.cover_url;cimg.style.display='block';document.getElementById('coverHint').style.display='none';showCoverMeta(c.cover_url.split('/').pop().slice(0,40));}
 
+  // Profile photo
+  const pimg=document.getElementById('photoImg');
+  if(pimg&&c.photo){pimg.src=c.photo;pimg.style.display='block';document.getElementById('photoHint').style.display='none';showPhotoMeta(c.photo.split('/').pop().slice(0,40));}
+
   // Company logo
   const limg=document.getElementById('logoImg');
   if(c.company_logo_url){limg.src=c.company_logo_url;limg.style.display='block';document.getElementById('logoHint').style.display='none';showLogoMeta(c.company_logo_url.split('/').pop().slice(0,30));}
@@ -274,6 +296,22 @@ function clearCover(e){
   document.getElementById('coverHint').style.display='block';
   document.getElementById('coverMeta').style.display='none';
   document.getElementById('coverInput').value='';
+}
+
+function onPhotoChange(e){
+  const f=e.target.files[0];if(!f)return;
+  newPhotoFile=f;photoDeleted=false;
+  const r=new FileReader();
+  r.onload=x=>{const img=document.getElementById('photoImg');img.src=x.target.result;img.style.display='block';document.getElementById('photoHint').style.display='none';showPhotoMeta(f.name);};
+  r.readAsDataURL(f);
+}
+function showPhotoMeta(name){document.getElementById('photoMeta').style.display='flex';document.getElementById('photoMetaName').textContent=name;}
+function clearPhoto(e){
+  e.stopPropagation();photoDeleted=true;newPhotoFile=null;
+  const img=document.getElementById('photoImg');img.style.display='none';img.src='';
+  document.getElementById('photoHint').style.display='block';
+  document.getElementById('photoMeta').style.display='none';
+  document.getElementById('photoInput').value='';
 }
 
 function onLogoChange(e){
@@ -348,6 +386,8 @@ async function save(){
     });
     if(newCoverFile){const url=await upFile(newCoverFile,'covers');if(url)updates.cover_url=url;}
     else if(coverDeleted){updates.cover_url=null;}
+    if(newPhotoFile){const url=await upFile(newPhotoFile,'photos');if(url)updates.photo=url;}
+    else if(photoDeleted){updates.photo=null;}
     if(newCompanyLogoFile){const url=await upFile(newCompanyLogoFile,'company-logos');if(url)updates.company_logo_url=url;}
     else if(companyLogoDeleted){updates.company_logo_url=null;}
     const catalogue=[];
