@@ -510,6 +510,11 @@ function render(c){
   const aboutHTML=c.bio
     ?`<div class="sec"><div class="sec-header"><div class="sec-ico">${UI_ICONS.user}</div><span class="sec-lbl">À propos</span></div><p class="about-txt">${c.bio}</p></div><div class="divider"><span></span></div>`
     :'';
+  // cv_url = le PDF/CV uploadé par le client lors de sa commande (order.html)
+  // On l'affiche seulement si le champ existe en base, sinon la section est vide
+  const cvHTML=c.cv_url
+    ?`<div class="sec"><div class="sec-header"><div class="sec-ico">${UI_ICONS.idcard}</div><span class="sec-lbl">CV / Portfolio</span></div><a href="${c.cv_url}" target="_blank" class="clink"><div class="clink-ico">📄</div><div class="clink-body"><span class="clink-lbl">Document</span><span class="clink-val">Voir le CV / Portfolio</span></div><span class="clink-arr">›</span></a></div><div class="divider"><span></span></div>`
+    :'';
   const contactHTML=contacts.length
     ?`<div class="sec"><div class="sec-header"><div class="sec-ico">${UI_ICONS.idcard}</div><span class="sec-lbl">Contact</span></div><div class="contact-list">${contacts.map(l=>`<a href="${l.href}" class="clink" ${l.t?'target="_blank"':''}><div class="clink-ico" style="${l.color?'color:'+l.color:''}">${l.ico}</div><div class="clink-body"><span class="clink-lbl">${l.lbl}</span><span class="clink-val">${l.val}</span></div><span class="clink-arr">›</span></a>`).join('')}</div></div><div class="divider"><span></span></div>`
     :'';
@@ -527,7 +532,7 @@ function render(c){
         </div>
       </div>
       ${compHTML}<div class="spacer"></div>
-      ${aboutHTML}${contactHTML}${catalogueHTML}${socialHTML}
+      ${aboutHTML}${cvHTML}${contactHTML}${catalogueHTML}${socialHTML}
       <div style="text-align:center;padding:1rem 1.2rem 1.5rem">
         <a href="https://printlegacy.github.io" style="font-size:.68rem;color:var(--muted);text-decoration:none">Propulsé par <strong style="color:var(--ink)">Print Legacy</strong></a>
       </div>
