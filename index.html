@@ -141,11 +141,6 @@ body{display:flex;justify-content:center;padding-bottom:90px}
 .st-uni-logo.dark{width:116px;height:46px;background:#2F4486;border-color:#2F4486}
 .st-uni-logo.dark img{padding:7px 9px;object-fit:contain}
 .st-link-wide{grid-column:1/-1;position:relative}
-.st-chev{position:absolute;right:1rem;display:flex}
-.st-chev svg{width:14px;height:14px;transition:transform .2s}
-.st-link-wide.open .st-chev svg{transform:rotate(90deg)}
-.st-contact{display:none;flex-direction:column;gap:.45rem;margin-top:.6rem}
-.st-contact.open{display:flex}
 .st-sec{padding:0 1.2rem 1.5rem}
 .st-title{font-size:.98rem;font-weight:600;color:var(--ink);padding-bottom:.6rem;border-bottom:1px solid var(--cream2);margin-bottom:.9rem}
 .st-about{font-size:.86rem;line-height:1.85;color:#2E2E2E}
@@ -539,13 +534,6 @@ function parseExperiences(c){
   }catch(e){return [];}
 }
 function parseSkills(c){return String(c.skills||'').split(',').map(s=>s.trim()).filter(Boolean);}
-function toggleStContact(){
-  const p=document.getElementById('stContact'),b=document.getElementById('stContactBtn');
-  if(!p||!b) return;
-  const open=p.classList.toggle('open');
-  b.classList.toggle('open',open);
-  b.setAttribute('aria-expanded',open?'true':'false');
-}
 function shareProfile(name){
   const url=location.href.replace(/([?&])src=[^&]*&?/,'$1').replace(/[?&]$/,'');
   if(navigator.share){navigator.share({title:name,url}).catch(()=>{});}
@@ -590,13 +578,11 @@ function renderStudent(c,uni){
   if(c.email)links.push(`<a class="st-link" href="mailto:${esc(c.email)}">${UI_ICONS.mail}Email</a>`);
   if(c.portfolio)links.push(`<a class="st-link" href="${esc(normUrl(c.portfolio))}" target="_blank" rel="noopener">${ST_ICONS.link}Portfolio</a>`);
   links.push(`<button type="button" class="st-link" onclick="shareProfile(${esc(JSON.stringify(name.trim()))})">${UI_ICONS.share}Partager</button>`);
-  const contactItems=buildContacts(c).filter(l=>l.lbl!=='CV / Portfolio');
-  if(contactItems.length) links.push(`<button type="button" id="stContactBtn" class="st-link st-link-wide" onclick="toggleStContact()" aria-expanded="false">${UI_ICONS.phone}Contact<span class="st-chev">${UI_ICONS.chevron}</span></button>`);
-  const contactPanel=contactItems.length
-    ?`<div class="st-contact" id="stContact">${contactItems.map(l=>`<a href="${esc(l.href)}" class="clink" ${l.t?'target="_blank" rel="noopener"':''}><div class="clink-ico" style="${l.color?'color:'+l.color:''}">${l.ico}</div><div class="clink-body"><span class="clink-lbl">${esc(l.lbl)}</span><span class="clink-val">${esc(l.val)}</span></div><span class="clink-arr">›</span></a>`).join('')}</div>`
-    :'';
+  // Onglet Contact : ouvre directement l'appel vers le numéro de téléphone
+  const tel=String(c.phone||'').trim();
+  if(tel) links.push(`<a class="st-link st-link-wide" href="tel:${esc(tel.replace(/[^\d+]/g,''))}">${UI_ICONS.phone}Contact</a>`);
   const cvBtn=c.cv_url?`<a class="st-cv" href="${esc(c.cv_url)}" target="_blank" rel="noopener">${UI_ICONS.fileText}Consulter le CV</a>`:'';
-  const linksHTML=`<div class="st-sec"><div class="st-title">Liens</div>${cvBtn}<div class="st-links">${links.join('')}</div>${contactPanel}</div>`;
+  const linksHTML=`<div class="st-sec"><div class="st-title">Liens</div>${cvBtn}<div class="st-links">${links.join('')}</div></div>`;
 
   const exps=parseExperiences(c);
   const expHTML0=exps.length
