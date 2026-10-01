@@ -576,14 +576,20 @@ function renderStudent(c,uni){
   const linksHTML=`<div class="st-sec"><div class="st-title">Liens</div>${cvBtn}<div class="st-links">${links.join('')}</div></div>`;
 
   const exps=parseExperiences(c);
-  const expHTML=exps.length
+  const expHTML0=exps.length
     ?`<div class="st-sec"><div class="st-title">Expériences</div>${exps.map(e=>`<div class="st-exp"><div class="st-dot"></div><div><div class="st-exp-t">${esc(e.poste)}</div>${e.org?`<div class="st-exp-o">${esc(e.org)}</div>`:''}${e.periode?`<div class="st-exp-p">${esc(e.periode)}</div>`:''}</div></div>`).join('')}</div>`
     :'';
 
   const skills=parseSkills(c);
-  const skillsHTML=skills.length
+  const skillsHTML0=skills.length
     ?`<div class="st-sec"><div class="st-title">Compétences</div><div class="st-chips">${skills.map(s=>`<span class="st-chip">${esc(s)}</span>`).join('')}</div></div>`
     :'';
+
+  // Aperçu depuis le dashboard (src=admin) : on montre aussi les rubriques vides pour rappeler de les remplir
+  const isAdmin=getSource()==='admin';
+  const emptyHint=t=>`<div class="st-sec"><div class="st-title">${t}</div><p class="st-about" style="color:var(--muted);font-style:italic">Non renseigné — à compléter dans le dashboard (onglet 💼 Portfolio). Cette mention n'est visible que par vous.</p></div>`;
+  const expHTML=expHTML0||(isAdmin?emptyHint('Expériences'):'');
+  const skillsHTML=skillsHTML0||(isAdmin?emptyHint('Compétences'):'');
 
   document.getElementById('app').innerHTML=`
     <div class="card">
