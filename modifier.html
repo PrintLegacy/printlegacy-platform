@@ -177,6 +177,16 @@ function renderForm(c){
         <div class="field"><label>Nom</label><input id="f-lastname" value="${esc(c.lastname)}"></div>
         <div class="field"><label>${isBusiness?'Fonction':'Poste'}</label><input id="f-jobtitle" value="${esc(c.jobtitle)}"></div>
         <div class="field"><label>${isBusiness?"Nom de l'établissement":'Entreprise'}</label><input id="f-company" value="${esc(c.company)}"></div>
+        ${(c.produit==='student'||c.university_id)?`
+        <div class="field full"><label>🎓 Formation</label><input id="f-formation" value="${esc(c.formation)}" placeholder="Ex : Master 2 Finance"></div>
+        <div class="field full"><label>💼 Expériences (3 max)</label>
+          ${[0,1,2].map(i=>{const e=(Array.isArray(c.experiences)?c.experiences:[])[i]||{};return `<div style="display:grid;grid-template-columns:1.2fr 1fr .8fr;gap:6px;margin-bottom:6px">
+            <input id="f-exp-t-${i+1}" value="${esc(e.title)}" placeholder="Poste / mission">
+            <input id="f-exp-p-${i+1}" value="${esc(e.place)}" placeholder="Organisation">
+            <input id="f-exp-d-${i+1}" value="${esc(e.period)}" placeholder="Période"></div>`}).join('')}
+        </div>
+        <div class="field full"><label>🛠️ Compétences (séparées par des virgules, 6 max)</label><input id="f-skills" value="${esc(c.skills)}" placeholder="Python, Excel, Finance de marché"></div>
+        <div class="field full"><label>🔗 Portfolio (lien)</label><input id="f-portfolio_url" value="${esc(c.portfolio_url)}" placeholder="https://..."></div>`:''}
         <div class="field full"><label>Bio</label><textarea id="f-bio" rows="3">${esc(c.bio)}</textarea></div>
         <div class="field"><label>Localisation</label><input id="f-location" value="${esc(c.location)}"></div>
       </div>
@@ -380,10 +390,15 @@ async function save(){
   btn.disabled=true;btn.textContent='💾 Enregistrement...';
   try{
     const updates={theme:currentTheme};
-    ['firstname','lastname','jobtitle','company','bio','location','phone','whatsapp','email','website','instagram','linkedin','tiktok','snapchat','youtube','facebook','company_about','company_hours'].forEach(f=>{
+    ['firstname','lastname','jobtitle','company','bio','location','phone','whatsapp','email','website','instagram','linkedin','tiktok','snapchat','youtube','facebook','company_about','company_hours','formation','skills','portfolio_url'].forEach(f=>{
       const el=document.getElementById('f-'+f);
       if(el)updates[f]=el.value.trim()||null;
     });
+    // Expériences (uniquement si le bloc existe sur la page = profil étudiant)
+    if(document.getElementById('f-exp-t-1')){
+      const exps=[1,2,3].map(i=>({title:document.getElementById('f-exp-t-'+i).value.trim(),place:document.getElementById('f-exp-p-'+i).value.trim(),period:document.getElementById('f-exp-d-'+i).value.trim()})).filter(e=>e.title);
+      updates.experiences=exps;
+    }
     if(newCoverFile){const url=await upFile(newCoverFile,'covers');if(url)updates.cover_url=url;}
     else if(coverDeleted){updates.cover_url=null;}
     if(newPhotoFile){const url=await upFile(newPhotoFile,'photos');if(url)updates.photo=url;}
