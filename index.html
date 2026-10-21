@@ -161,9 +161,9 @@ body{display:flex;justify-content:center;padding-bottom:90px}
   border:1px solid var(--u-line);display:flex;gap:.85rem;align-items:center}
 .u-campus{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.12}
 .u-logo,.u-uni-txt{position:relative}
-.u-logo{width:46px;height:46px;border-radius:10px;background:var(--u-surface);flex-shrink:0;overflow:hidden;border:1px solid var(--u-line);
+.u-logo{min-width:46px;max-width:140px;height:46px;border-radius:10px;background:var(--u-surface);flex-shrink:0;overflow:hidden;border:1px solid var(--u-line);
   display:flex;align-items:center;justify-content:center;font-family:"Playfair Display",serif;font-weight:700;color:var(--u-primary)}
-.u-logo img{width:100%;height:100%;object-fit:contain;padding:5px}
+.u-logo img{display:block;height:100%;width:auto;max-width:140px;object-fit:contain;padding:5px}
 .u-inst-name{font-size:.88rem;font-weight:600;line-height:1.3}
 .u-uni-sub{display:flex;align-items:center;flex-wrap:wrap;gap:.35rem .7rem;margin-top:.4rem}
 .u-chip{display:inline-block;padding:.22rem .55rem;border-radius:4px;background:color-mix(in srgb,var(--u-primary) 12%,#fff);
@@ -218,8 +218,8 @@ body{display:flex;justify-content:center;padding-bottom:90px}
 .u-bar-t b{font-size:.92rem;font-weight:600}
 .u-bar-go{width:38px;height:34px;border-radius:8px;background:var(--u-primary);color:var(--u-on-primary);display:flex;align-items:center;justify-content:center}
 .u-bar-go svg{width:18px;height:18px}
-.uni-host{max-width:390px;margin:0 auto;background:#fff;min-height:100vh;box-shadow:none;border-radius:0;padding:0}
-.uni-host .wrap{width:100%;min-height:100vh;background:#fff}
+.uni.wrap{width:100%}
+
 </style>
 </head>
 <body>
@@ -565,74 +565,13 @@ function showToast(msg){
   setTimeout(()=>t.classList.remove('show'),2500);
 }
  
-function render(c){
-  applyTheme(c.theme||'noir');
-  const name=(c.firstname||'')+' '+(c.lastname||'');
-  document.title=name+' — Print Legacy';
-  const contacts=buildContacts(c);
-  const socials=buildSocials(c);
-  const catalogueHTML=buildCatalogue(c);
-  const av=c.photo?`<img src="${c.photo}" alt="${name}">`:`${ini(c.firstname,c.lastname)}`;
-  const heroImg=c.cover_url||c.cover_photo||c.photo;
-  const heroHTML=heroImg
-    ?`<img class="hero-img" src="${heroImg}" alt="${name}">`
-    :`<div class="hero-placeholder"><div class="hero-initials-big">${ini(c.firstname,c.lastname)}</div></div>`;
-  const roleHTML=c.jobtitle?`<em>${c.jobtitle}</em>${c.company?' · '+c.company:''}`:(c.company||'');
-  const coLogoHTML=c.company_logo_url
-    ?`<img src="${c.company_logo_url}" alt="${c.company}" onerror="imgFallback(this,'building','co-logo-fallback')">`
-    :UI_ICONS.building;
-  const hasCoDetails=!!(c.company_about||c.company_hours||c.location);
-  const coDetailsHTML=hasCoDetails
-    ?`<div class="co-details" id="coDetails">${c.company_about?`<div class="co-detail-about">${c.company_about}</div>`:''}${c.company_hours?`<div class="co-detail-row"><span class="co-detail-ico">${UI_ICONS.clock}</span><span>${c.company_hours}</span></div>`:''}${c.location?`<a href="${c.location.startsWith('http')?c.location:'https://maps.google.com/?q='+encodeURIComponent(c.location)}" target="_blank" class="co-detail-row"><span class="co-detail-ico">${UI_ICONS.mapPin}</span><span>${c.location.startsWith('http')?'Voir sur la carte':c.location}</span></a>`:''}</div>`
-    :'';
-  const compHTML=c.company
-    ?`<div class="company-card-wrap">
-        <div class="company-card" ${hasCoDetails?'onclick="toggleCompanyDetails()"':''} style="${hasCoDetails?'cursor:pointer':''}">
-          <div class="co-left">
-            <div class="co-logo">${coLogoHTML}</div>
-            <div><div class="co-name">${c.company}</div><span class="co-badge">Entreprise principale</span></div>
-          </div>
-          ${hasCoDetails?`<div class="co-arr" id="coArr">${UI_ICONS.chevron}</div>`:''}
-        </div>
-        ${coDetailsHTML}
-      </div>`
-    :'';
-  const aboutHTML=c.bio
-    ?`<div class="sec"><div class="sec-header"><div class="sec-ico">${UI_ICONS.user}</div><span class="sec-lbl">À propos</span></div><p class="about-txt">${c.bio}</p></div><div class="divider"><span></span></div>`
-    :'';
-  const contactHTML=contacts.length
-    ?`<div class="sec"><div class="sec-header"><div class="sec-ico">${UI_ICONS.idcard}</div><span class="sec-lbl">Contact</span></div><div class="contact-list">${contacts.map(l=>`<a href="${l.href}" class="clink" ${l.t?'target="_blank"':''}><div class="clink-ico" style="${l.color?'color:'+l.color:''}">${l.ico}</div><div class="clink-body"><span class="clink-lbl">${l.lbl}</span><span class="clink-val">${l.val}</span></div><span class="clink-arr">›</span></a>`).join('')}</div></div><div class="divider"><span></span></div>`
-    :'';
-  const socialHTML=socials.length
-    ?`<div class="sec"><div class="sec-header"><div class="sec-ico">${UI_ICONS.share}</div><span class="sec-lbl">Réseaux sociaux</span></div><div class="soc-grid">${socials.map(s=>`<a href="${s.href}" target="_blank" class="soc-btn"><span class="soc-ico" style="background:${s.bg}">${s.ico}</span><span class="soc-name">${s.name}</span></a>`).join('')}</div></div><div class="divider"><span></span></div>`
-    :'';
- 
-  document.getElementById('app').innerHTML=`
-    <div class="card">
-      <div class="hero">${heroHTML}<div class="hero-overlay"></div>
-        <div class="hero-content">
-          <div class="hero-badge">Carte professionnelle</div>
-          <div class="hero-name">${name}</div>
-          <div class="hero-role">${roleHTML}</div>
-        </div>
-      </div>
-      ${compHTML}<div class="spacer"></div>
-      ${aboutHTML}${contactHTML}${catalogueHTML}${socialHTML}
-      <div style="text-align:center;padding:1rem 1.2rem 1.5rem">
-        <a href="https://printlegacy.github.io" style="font-size:.68rem;color:var(--muted);text-decoration:none">Propulsé par <strong style="color:var(--ink)">Print Legacy</strong></a>
-      </div>
-    </div>
-    <div class="save-bar">
-      <div class="sb-left">
-        <div class="sb-av">${av}</div>
-        <div class="sb-txt"><span class="sb-sublbl">Ajouter à mes contacts</span><span class="sb-title">Enregistrer le contact</span></div>
-      </div>
-      <button class="sb-btn" onclick='saveVCard(${JSON.stringify(c).replace(/'/g,"&#39;")})'>→</button>
-    </div>`;
-}
- 
-/* ═══════ PROFIL UNIVERSITAIRE ═══════ */
+// ═══ PROFIL UNIVERSITAIRE (cartes rattachées à une université) ═══
 function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
+function shareProfile(name){
+  const url=location.href.replace(/([?&])src=[^&]*&?/,'$1').replace(/[?&]$/,'');
+  if(navigator.share){navigator.share({title:name,url}).catch(()=>{});}
+  else if(navigator.clipboard){navigator.clipboard.writeText(url).then(()=>showToast('✓ Lien copié !')).catch(()=>{});}
+}
 const UNI_SVG={
   file:'<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/>',
   mail:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>',
@@ -700,7 +639,8 @@ function renderUniversityProfile(c,uni){
 
   /* 4. Liens (placés en fin de profil, avant le pied de page) */
   const extras=[];
-  if(c.portfolio_url)extras.push({href:uniUrl(c.portfolio_url),label:'Portfolio'});
+  const pf=c.portfolio_url||c.portfolio;
+  if(pf)extras.push({href:uniUrl(pf),label:'Portfolio'});
   if(c.website)extras.push({href:uniUrl(c.website),label:'Site web'});
   uniList(c.custom_links).forEach(l=>{if(l&&l.url)extras.push({href:uniUrl(l.url),label:l.label||'Lien'});});
   const a=(href,inner,cls)=>'<a class="'+cls+'" href="'+esc(href)+'" target="_blank" rel="noopener">'+inner+'</a>';
@@ -722,7 +662,7 @@ function renderUniversityProfile(c,uni){
   const links=uniSection('Liens',cv+'<div class="u-grid">'+btns.join('')+'</div>');
 
   /* 5. Expériences + compétences (le parcours académique n'est plus affiché) */
-  const exp=uniList(c.experiences).filter(i=>i&&i.title).slice(0,3);
+  const exp=uniList(c.experiences).map(i=>i&&({title:i.title||i.poste,place:i.place||i.org,period:i.period||i.periode})).filter(i=>i&&i.title).slice(0,3);
   let skills=c.skills;if(typeof skills==='string')skills=skills.split(',');
   skills=(Array.isArray(skills)?skills:[]).map(s=>String(s).trim()).filter(Boolean).slice(0,6);
   const exps=exp.length?uniSection('Expériences',uniTimeline(exp)):'';
@@ -736,19 +676,83 @@ function renderUniversityProfile(c,uni){
     '<span class="u-bar-t"><small>Ajouter à mes contacts</small><b>Enregistrer le contact</b></span>'+
     '<span class="u-bar-go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></button>';
 
-  document.getElementById('app').className='uni-host';
+  document.getElementById('app').style.maxWidth='390px';
   document.getElementById('app').innerHTML='<div class="wrap uni" style="'+vars+'">'+hero+uniCard+about+exps+tags+links+foot+bar+'</div>';
 }
-function uniShare(){
-  const c=window.__client||{};const url=location.href.split('#')[0];
-  const nm=((c.firstname||'')+' '+(c.lastname||'')).trim();
-  if(navigator.share){navigator.share({title:nm,url}).catch(()=>{});}
-  else if(navigator.clipboard){navigator.clipboard.writeText(url).then(()=>showToast('✓ Lien copié !')).catch(()=>prompt('Copiez ce lien :',url));}
-  else prompt('Copiez ce lien :',url);
+function uniShare(){const c=window.__client||{};shareProfile(((c.firstname||'')+' '+(c.lastname||'')).trim());}
+function uniSave(){const c=window.__client||{};saveVCard(Object.assign({},c,{jobtitle:c.jobtitle||c.formation||'',company:c.company||(window.__uni&&window.__uni.name)||''}));}
+
+function render(c){
+  applyTheme(c.theme||'noir');
+  const name=(c.firstname||'')+' '+(c.lastname||'');
+  document.title=name+' — Print Legacy';
+  const contacts=buildContacts(c);
+  const socials=buildSocials(c);
+  const catalogueHTML=buildCatalogue(c);
+  const av=c.photo?`<img src="${c.photo}" alt="${name}">`:`${ini(c.firstname,c.lastname)}`;
+  const heroImg=c.cover_url||c.cover_photo||c.photo;
+  const heroHTML=heroImg
+    ?`<img class="hero-img" src="${heroImg}" alt="${name}">`
+    :`<div class="hero-placeholder"><div class="hero-initials-big">${ini(c.firstname,c.lastname)}</div></div>`;
+  const roleHTML=c.jobtitle?`<em>${c.jobtitle}</em>${c.company?' · '+c.company:''}`:(c.company||'');
+  const coLogoHTML=c.company_logo_url
+    ?`<img src="${c.company_logo_url}" alt="${c.company}" onerror="imgFallback(this,'building','co-logo-fallback')">`
+    :UI_ICONS.building;
+  const hasCoDetails=!!(c.company_about||c.company_hours||c.location);
+  const coDetailsHTML=hasCoDetails
+    ?`<div class="co-details" id="coDetails">${c.company_about?`<div class="co-detail-about">${c.company_about}</div>`:''}${c.company_hours?`<div class="co-detail-row"><span class="co-detail-ico">${UI_ICONS.clock}</span><span>${c.company_hours}</span></div>`:''}${c.location?`<a href="${c.location.startsWith('http')?c.location:'https://maps.google.com/?q='+encodeURIComponent(c.location)}" target="_blank" class="co-detail-row"><span class="co-detail-ico">${UI_ICONS.mapPin}</span><span>${c.location.startsWith('http')?'Voir sur la carte':c.location}</span></a>`:''}</div>`
+    :'';
+  const compHTML=c.company
+    ?`<div class="company-card-wrap">
+        <div class="company-card" ${hasCoDetails?'onclick="toggleCompanyDetails()"':''} style="${hasCoDetails?'cursor:pointer':''}">
+          <div class="co-left">
+            <div class="co-logo">${coLogoHTML}</div>
+            <div><div class="co-name">${c.company}</div><span class="co-badge">Entreprise principale</span></div>
+          </div>
+          ${hasCoDetails?`<div class="co-arr" id="coArr">${UI_ICONS.chevron}</div>`:''}
+        </div>
+        ${coDetailsHTML}
+      </div>`
+    :'';
+  const aboutHTML=c.bio
+    ?`<div class="sec"><div class="sec-header"><div class="sec-ico">${UI_ICONS.user}</div><span class="sec-lbl">À propos</span></div><p class="about-txt">${c.bio}</p></div><div class="divider"><span></span></div>`
+    :'';
+  // cv_url = le PDF/CV uploadé par le client lors de sa commande (order.html)
+  // On l'affiche seulement si le champ existe en base, sinon la section est vide
+  const cvHTML=c.cv_url
+    ?`<div class="sec"><div class="sec-header"><div class="sec-ico">${UI_ICONS.idcard}</div><span class="sec-lbl">CV / Portfolio</span></div><a href="${c.cv_url}" target="_blank" class="clink"><div class="clink-ico">📄</div><div class="clink-body"><span class="clink-lbl">Document</span><span class="clink-val">Voir le CV / Portfolio</span></div><span class="clink-arr">›</span></a></div><div class="divider"><span></span></div>`
+    :'';
+  const contactHTML=contacts.length
+    ?`<div class="sec"><div class="sec-header"><div class="sec-ico">${UI_ICONS.idcard}</div><span class="sec-lbl">Contact</span></div><div class="contact-list">${contacts.map(l=>`<a href="${l.href}" class="clink" ${l.t?'target="_blank"':''}><div class="clink-ico" style="${l.color?'color:'+l.color:''}">${l.ico}</div><div class="clink-body"><span class="clink-lbl">${l.lbl}</span><span class="clink-val">${l.val}</span></div><span class="clink-arr">›</span></a>`).join('')}</div></div><div class="divider"><span></span></div>`
+    :'';
+  const socialHTML=socials.length
+    ?`<div class="sec"><div class="sec-header"><div class="sec-ico">${UI_ICONS.share}</div><span class="sec-lbl">Réseaux sociaux</span></div><div class="soc-grid">${socials.map(s=>`<a href="${s.href}" target="_blank" class="soc-btn"><span class="soc-ico" style="background:${s.bg}">${s.ico}</span><span class="soc-name">${s.name}</span></a>`).join('')}</div></div><div class="divider"><span></span></div>`
+    :'';
+ 
+  document.getElementById('app').innerHTML=`
+    <div class="card">
+      <div class="hero">${heroHTML}<div class="hero-overlay"></div>
+        <div class="hero-content">
+          <div class="hero-badge">Carte professionnelle</div>
+          <div class="hero-name">${name}</div>
+          <div class="hero-role">${roleHTML}</div>
+        </div>
+      </div>
+      ${compHTML}<div class="spacer"></div>
+      ${aboutHTML}${cvHTML}${contactHTML}${catalogueHTML}${socialHTML}
+      <div style="text-align:center;padding:1rem 1.2rem 1.5rem">
+        <a href="https://printlegacy.github.io" style="font-size:.68rem;color:var(--muted);text-decoration:none">Propulsé par <strong style="color:var(--ink)">Print Legacy</strong></a>
+      </div>
+    </div>
+    <div class="save-bar">
+      <div class="sb-left">
+        <div class="sb-av">${av}</div>
+        <div class="sb-txt"><span class="sb-sublbl">Ajouter à mes contacts</span><span class="sb-title">Enregistrer le contact</span></div>
+      </div>
+      <button class="sb-btn" onclick='saveVCard(${JSON.stringify(c).replace(/'/g,"&#39;")})'>→</button>
+    </div>`;
 }
-function uniSave(){const c=window.__client||{};saveVCard(Object.assign({},c,{company:c.company||(window.__uni&&window.__uni.name)||''}));}
-
-
+ 
 async function init(){
   const slug=getSlug();
   if(!slug){
@@ -760,13 +764,13 @@ async function init(){
     document.getElementById('app').innerHTML=`<div class="err"><div style="width:44px;height:44px;color:var(--muted)">${UI_ICONS.frown}</div><h2>Carte introuvable</h2><p>Le profil "<strong>${slug}</strong>" n'est pas encore activé.</p><a href="https://printlegacy.github.io">← Accueil</a></div>`;
     return;
   }
-  // Bascule : profil universitaire si l'étudiant est rattaché à une université
+  // Carte rattachée à une université : on charge l'université (logo, couleurs, liens) puis profil universitaire.
+  // Sinon (ou si la lecture échoue) : profil classique, inchangé.
   let uni=null;
   if(data.university_id){
-    try{const r=await sb.from('universities').select('*').eq('id',data.university_id).single();if(r.data)uni=r.data;}catch(e){}
+    try{const r=await sb.from('universities').select('*').eq('id',data.university_id).single();uni=r.data||null;}catch(e){}
   }
-  if(isPartnerUniversityProfile(data,uni))renderUniversityProfile(data,uni);
-  else render(data);
+  if(isPartnerUniversityProfile(data,uni)) renderUniversityProfile(data,uni); else render(data);
   trackView(data.id); // on enregistre la vue une fois la carte affichée avec succès
 }
  
