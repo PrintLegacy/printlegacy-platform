@@ -34,6 +34,7 @@ html,body{min-height:100%;font-family:'Jost',sans-serif;background:var(--cream);
 .cover-zone:hover .cz-overlay{display:flex}
 .cz-meta{display:none;align-items:center;gap:8px;margin-top:6px;font-size:.68rem;color:var(--smoke2)}
 .cz-meta button{background:none;border:none;color:#C62828;cursor:pointer;font-size:.68rem;font-family:'Jost',sans-serif}
+.logo-zone{width:100px;height:100px;flex-shrink:0}
 .photo-zone{width:100px;height:100px;flex-shrink:0;border-radius:50%}
 .photo-zone img{border-radius:50%;object-fit:cover}
 .theme-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
@@ -78,7 +79,7 @@ html,body{min-height:100%;font-family:'Jost',sans-serif;background:var(--cream);
 const {createClient}=supabase;
 const sb=createClient(
   'https://szpjpytpciptplqjfwyd.supabase.co',
-  'eyJhbGci••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••'
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN6cGpweXRwY2lwdHBscWpmd3lkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc2NDA3MTMsImV4cCI6MjA5MzIxNjcxM30.WWXHihsbAKge_oHdbBAPLM40swm2P0XMco7kSrCO9e4'
 );
 
 const THEMES=[
@@ -113,6 +114,7 @@ let newCvFile=null, cvDeleted=false;
 function onCvChange(e){const f=e.target.files[0];if(!f)return;if(f.size>10*1024*1024){showToast('Fichier trop lourd (10 Mo max)');e.target.value='';return;}newCvFile=f;cvDeleted=false;document.getElementById('cvMetaName').textContent='📄 '+f.name;document.getElementById('cvMeta').style.display='flex';}
 function clearCv(){newCvFile=null;const i=document.getElementById('f-cv-file');if(i)i.value='';document.getElementById('cvMeta').style.display='none';}
 function deleteCv(){if(!confirm('Supprimer votre CV ?'))return;cvDeleted=true;newCvFile=null;document.getElementById('cvCurrent').innerHTML='<span style="color:#C62828">CV supprimé (enregistrez pour confirmer)</span>';const b=document.getElementById('cvDelBtn');if(b)b.style.display='none';}
+let newCompanyLogoFile=null, companyLogoDeleted=false;
 
 function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function showToast(msg){
@@ -202,6 +204,28 @@ function renderForm(c){
     </div>
 
     <div class="card">
+      <div class="sec-hd">Entreprise</div>
+      <div class="grid">
+        <div class="field full">
+          <label>🏢 Logo</label>
+          <div style="display:flex;align-items:center;gap:12px">
+            <div class="cover-zone logo-zone" id="logoZone" onclick="document.getElementById('logoInput').click()">
+              <input type="file" id="logoInput" accept="image/*" style="display:none" onchange="onLogoChange(event)">
+              <img id="logoImg" style="object-fit:contain;padding:8px">
+              <div class="cz-hint" id="logoHint" style="font-size:1.1rem">🏢</div>
+              <div class="cz-overlay">📷</div>
+            </div>
+            <div style="flex:1">
+              <div class="cz-meta" id="logoMeta" style="display:none"><span id="logoMetaName"></span><button onclick="clearLogo(event)">✕ Supprimer</button></div>
+            </div>
+          </div>
+        </div>
+        <div class="field full"><label>À propos</label><textarea id="f-company_about" rows="3">${esc(c.company_about)}</textarea></div>
+        <div class="field full"><label>Horaires d'ouverture</label><input id="f-company_hours" value="${esc(c.company_hours)}" placeholder="Lun-Ven 9h-18h"></div>
+      </div>
+    </div>
+
+    <div class="card">
       <div class="sec-hd">Contact</div>
       <div class="grid">
         <div class="field"><label>Téléphone</label><input id="f-phone" value="${esc(c.phone)}"></div>
@@ -245,6 +269,10 @@ function renderForm(c){
   // Profile photo
   const pimg=document.getElementById('photoImg');
   if(pimg&&c.photo){pimg.src=c.photo;pimg.style.display='block';document.getElementById('photoHint').style.display='none';showPhotoMeta(c.photo.split('/').pop().slice(0,40));}
+
+  // Company logo
+  const limg=document.getElementById('logoImg');
+  if(c.company_logo_url){limg.src=c.company_logo_url;limg.style.display='block';document.getElementById('logoHint').style.display='none';showLogoMeta(c.company_logo_url.split('/').pop().slice(0,30));}
 
   // Theme grid
   const tg=document.getElementById('themeGrid');
@@ -310,6 +338,22 @@ function clearPhoto(e){
   document.getElementById('photoInput').value='';
 }
 
+function onLogoChange(e){
+  const f=e.target.files[0];if(!f)return;
+  newCompanyLogoFile=f;companyLogoDeleted=false;
+  const r=new FileReader();
+  r.onload=x=>{const img=document.getElementById('logoImg');img.src=x.target.result;img.style.display='block';document.getElementById('logoHint').style.display='none';showLogoMeta(f.name);};
+  r.readAsDataURL(f);
+}
+function showLogoMeta(name){document.getElementById('logoMeta').style.display='flex';document.getElementById('logoMetaName').textContent=name;}
+function clearLogo(e){
+  e.stopPropagation();companyLogoDeleted=true;newCompanyLogoFile=null;
+  const img=document.getElementById('logoImg');img.style.display='none';img.src='';
+  document.getElementById('logoHint').style.display='block';
+  document.getElementById('logoMeta').style.display='none';
+  document.getElementById('logoInput').value='';
+}
+
 function addCatRow(existing){
   const id=++catCounter;
   const row={id,title:existing?.title||'',desc:existing?.desc||'',price:existing?.price||'',image_url:existing?.image_url||null};
@@ -361,7 +405,7 @@ async function save(){
   try{
     const updates={};
     if(document.getElementById('themeGrid'))updates.theme=currentTheme;
-    ['firstname','lastname','jobtitle','company','bio','location','phone','whatsapp','email','website','instagram','linkedin','tiktok','snapchat','youtube','facebook','formation','skills','portfolio_url'].forEach(f=>{
+    ['firstname','lastname','jobtitle','company','bio','location','phone','whatsapp','email','website','instagram','linkedin','tiktok','snapchat','youtube','facebook','company_about','company_hours','formation','skills','portfolio_url'].forEach(f=>{
       const el=document.getElementById('f-'+f);
       if(el)updates[f]=el.value.trim()||null;
     });
@@ -374,6 +418,8 @@ async function save(){
     else if(coverDeleted){updates.cover_url=null;}
     if(newPhotoFile){const url=await upFile(newPhotoFile,'photos');if(url)updates.photo=url;}
     else if(photoDeleted){updates.photo=null;}
+    if(newCompanyLogoFile){const url=await upFile(newCompanyLogoFile,'company-logos');if(url)updates.company_logo_url=url;}
+    else if(companyLogoDeleted){updates.company_logo_url=null;}
     const catalogue=[];
     for(const row of catRows){
       let imgUrl=catFiles[row.id]?.uploadedUrl||row.image_url||null;
