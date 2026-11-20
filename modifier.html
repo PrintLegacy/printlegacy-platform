@@ -110,6 +110,10 @@ let catRows=[], catCounter=0;
 const catFiles={};
 let newCoverFile=null, coverDeleted=false;
 let newPhotoFile=null, photoDeleted=false;
+let newCvFile=null, cvDeleted=false;
+function onCvChange(e){const f=e.target.files[0];if(!f)return;if(f.size>10*1024*1024){showToast('Fichier trop lourd (10 Mo max)');e.target.value='';return;}newCvFile=f;cvDeleted=false;document.getElementById('cvMetaName').textContent='📄 '+f.name;document.getElementById('cvMeta').style.display='flex';}
+function clearCv(){newCvFile=null;const i=document.getElementById('f-cv-file');if(i)i.value='';document.getElementById('cvMeta').style.display='none';}
+function deleteCv(){if(!confirm('Supprimer votre CV ?'))return;cvDeleted=true;newCvFile=null;document.getElementById('cvCurrent').innerHTML='<span style="color:#C62828">CV supprimé (enregistrez pour confirmer)</span>';const b=document.getElementById('cvDelBtn');if(b)b.style.display='none';}
 let newCompanyLogoFile=null, companyLogoDeleted=false;
 
 function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
@@ -187,7 +191,13 @@ function renderForm(c){
             <input id="f-exp-d-${i+1}" value="${esc(e.period)}" placeholder="Période"></div>`}).join('')}
         </div>
         <div class="field full"><label>🛠️ Compétences (séparées par des virgules, 6 max)</label><input id="f-skills" value="${esc(c.skills)}" placeholder="Python, Excel, Finance de marché"></div>
-        <div class="field full"><label>🔗 Portfolio (lien)</label><input id="f-portfolio_url" value="${esc(c.portfolio_url)}" placeholder="https://..."></div>`:''}
+        <div class="field full"><label>🔗 Portfolio (lien)</label><input id="f-portfolio_url" value="${esc(c.portfolio_url)}" placeholder="https://..."></div>
+        <div class="field full"><label>📄 CV (PDF, DOC, DOCX)</label>
+          <div id="cvCurrent" style="font-size:12px;margin-bottom:6px">${c.cv_url?`<a href="${esc(c.cv_url)}" target="_blank" rel="noopener" style="color:#2F4486;font-weight:600">📄 Voir mon CV actuel</a>`:'<span style="color:#888">Aucun CV pour le moment</span>'}</div>
+          <input type="file" id="f-cv-file" accept=".pdf,.doc,.docx" onchange="onCvChange(event)">
+          <div id="cvMeta" style="display:none;font-size:11px;margin-top:5px;color:#555;align-items:center;gap:8px"><span id="cvMetaName"></span> <button type="button" onclick="clearCv()" style="background:none;border:none;color:#C62828;cursor:pointer;font-size:11px">✕ Annuler</button></div>
+          ${c.cv_url?`<button type="button" onclick="deleteCv()" id="cvDelBtn" style="background:none;border:none;color:#C62828;cursor:pointer;font-size:11px;margin-top:5px;padding:0">🗑️ Supprimer mon CV</button>`:''}
+        </div>`:''}
         <div class="field full"><label>Bio</label><textarea id="f-bio" rows="3">${esc(c.bio)}</textarea></div>
         <div class="field"><label>Localisation</label><input id="f-location" value="${esc(c.location)}"></div>
       </div>
@@ -429,7 +439,20 @@ async function save(){
       showToast('⚠️ Aucune modification enregistrée — jeton invalide');
     }else{
       client={...client,...data[0]};
-      showToast('✓ Votre carte a été mise à jour !');
+      let cvMsg='';
+      if(newCvFile||cvDeleted){
+        const cvUrl=newCvFile?await upFile(newCvFile,'cvs'):null;
+        if(newCvFile&&!cvUrl){cvMsg=' (CV non envoyé)';}
+        else{
+          const r=await sb.rpc('update_client_cv',{p_slug:client.slug,p_token:currentToken,p_cv_url:cvUrl});
+          if(r.error){cvMsg=' (CV non enregistré : '+r.error.message+')';}
+          else if(r.data===false){cvMsg=' (CV non enregistré : lien invalide)';}
+          else{client.cv_url=cvUrl;newCvFile=null;cvDeleted=false;
+            const cc=document.getElementById('cvCurrent');if(cc)cc.innerHTML=cvUrl?`<a href="${esc(cvUrl)}" target="_blank" rel="noopener" style="color:#2F4486;font-weight:600">📄 Voir mon CV actuel</a>`:'<span style="color:#888">Aucun CV pour le moment</span>';
+            clearCv();}
+        }
+      }
+      showToast('✓ Votre carte a été mise à jour !'+cvMsg);
     }
   }catch(err){
     showToast('Erreur : '+(err.message||'réessayez plus tard'));
