@@ -143,6 +143,7 @@ function renderForm(c){
   document.getElementById('topSub').textContent='Modifier ma carte — '+((c.firstname||'')+' '+(c.lastname||'')).trim();
   const PRODUCT_LABEL={student:'Carte NFC Student',pro:'Carte NFC Pro',porteclefs:'Porte-clés NFC',plaque:'Plaque NFC',bracelet:'Bracelet NFC'};
   const isBusiness=(c.produit==='plaque');
+  const isStudentProfile=(c.produit==='student'||!!c.university_id);   // profil étudiant : LinkedIn uniquement (pas d'autres réseaux sociaux)
 
   document.getElementById('wrap').innerHTML=`
     <div class="card">
@@ -227,12 +228,14 @@ function renderForm(c){
     <div class="card">
       <div class="sec-hd">Réseaux sociaux</div>
       <div class="grid">
-        <div class="field"><label>📸 Instagram</label><input id="f-instagram" value="${esc(c.instagram)}" placeholder="@compte"></div>
         <div class="field"><label>💼 LinkedIn</label><input id="f-linkedin" value="${esc(c.linkedin)}"></div>
+        ${isStudentProfile?'':`
+        <div class="field"><label>📸 Instagram</label><input id="f-instagram" value="${esc(c.instagram)}" placeholder="@compte"></div>
         <div class="field"><label>🎵 TikTok</label><input id="f-tiktok" value="${esc(c.tiktok)}" placeholder="@compte"></div>
         <div class="field"><label>👻 Snapchat</label><input id="f-snapchat" value="${esc(c.snapchat)}" placeholder="@compte"></div>
         <div class="field"><label>▶️ YouTube</label><input id="f-youtube" value="${esc(c.youtube)}"></div>
         <div class="field"><label>📘 Facebook</label><input id="f-facebook" value="${esc(c.facebook)}"></div>
+        `}
       </div>
     </div>
 
