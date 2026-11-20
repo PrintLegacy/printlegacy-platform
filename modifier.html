@@ -202,29 +202,6 @@ function renderForm(c){
         <div class="field"><label>Localisation</label><input id="f-location" value="${esc(c.location)}"></div>
       </div>
     </div>
-
-    <div class="card">
-      <div class="sec-hd">Entreprise</div>
-      <div class="grid">
-        <div class="field full">
-          <label>🏢 Logo</label>
-          <div style="display:flex;align-items:center;gap:12px">
-            <div class="cover-zone logo-zone" id="logoZone" onclick="document.getElementById('logoInput').click()">
-              <input type="file" id="logoInput" accept="image/*" style="display:none" onchange="onLogoChange(event)">
-              <img id="logoImg" style="object-fit:contain;padding:8px">
-              <div class="cz-hint" id="logoHint" style="font-size:1.1rem">🏢</div>
-              <div class="cz-overlay">📷</div>
-            </div>
-            <div style="flex:1">
-              <div class="cz-meta" id="logoMeta" style="display:none"><span id="logoMetaName"></span><button onclick="clearLogo(event)">✕ Supprimer</button></div>
-            </div>
-          </div>
-        </div>
-        <div class="field full"><label>À propos</label><textarea id="f-company_about" rows="3">${esc(c.company_about)}</textarea></div>
-        <div class="field full"><label>Horaires d'ouverture</label><input id="f-company_hours" value="${esc(c.company_hours)}" placeholder="Lun-Ven 9h-18h"></div>
-      </div>
-    </div>
-
     <div class="card">
       <div class="sec-hd">Contact</div>
       <div class="grid">
